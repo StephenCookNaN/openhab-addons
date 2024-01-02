@@ -33,7 +33,7 @@ public class TapoBulbData extends TapoBaseDeviceData {
     private boolean deviceOn = false;
 
     @Expose(serialize = true, deserialize = true)
-    private int brightness = 0;
+    private int brightness = 100;
 
     @SerializedName("color_temp")
     @Expose(serialize = true, deserialize = true)
@@ -160,5 +160,9 @@ public class TapoBulbData extends TapoBaseDeviceData {
 
     public long getTimeUsagePastToday() {
         return timeUsageToday;
+    }
+
+    public boolean supportsMultiRequest() {
+        return !getHardwareVersion().startsWith("1");
     }
 }

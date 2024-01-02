@@ -209,7 +209,7 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
      */
     protected void switchOnOff(boolean on) {
         deviceData.switchOnOff(on);
-        connector.sendDeviceCommand(deviceData);
+        connector.sendCommandAndQuery(deviceData, false);
     }
 
     /**
@@ -224,7 +224,7 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
         } else {
             deviceData.switchOn();
             deviceData.setBrightness(newBrightness);
-            connector.sendDeviceCommand(deviceData);
+            connector.sendCommandAndQuery(deviceData, false);
         }
     }
 
@@ -238,7 +238,7 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
         deviceData.setHue(command.getHue().intValue());
         deviceData.setSaturation(command.getSaturation().intValue());
         deviceData.setBrightness(command.getBrightness().intValue());
-        connector.sendDeviceCommand(deviceData);
+        connector.sendCommandAndQuery(deviceData, false);
     }
 
     /**
@@ -249,7 +249,7 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
     protected void setColorTemp(Integer colorTemp) {
         deviceData.switchOn();
         deviceData.setColorTemp(colorTemp);
-        connector.sendDeviceCommand(deviceData);
+        connector.sendCommandAndQuery(deviceData, false);
     }
 
     /**

@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -188,7 +189,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     }
 
     /**
-     * Send command to device with params and query info immediately
+     * Send command to device with params
      * 
      * @param command command
      * @param deviceDataClass clazz contains devicedata which should be sent
@@ -197,12 +198,42 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     public void sendDeviceCommand(String command, Object deviceDataClass, boolean ignoreGap) {
         long now = System.currentTimeMillis();
         if (ignoreGap || now > lastSent + TAPO_SEND_MIN_GAP_MS) {
+            sendAsyncRequest(new TapoRequest(command, deviceDataClass));
+        } else {
+            logger.debug("({}) command not sent because of min_gap: {} <- {}", uid, now, lastSent);
+        }
+    }
+
+    /**
+     * Send command to device with params and query info immediately
+     * 
+     * @param deviceDataClass clazz contains devicedata which should be sent
+     * @param multipleRequestSupported set to true if device supports multipleRequests
+     */
+    public void sendCommandAndQuery(Object deviceDataClass, boolean multipleRequestSupported) {
+        sendCommandAndQuery(DEVICE_CMD_SETINFO, deviceDataClass, multipleRequestSupported);
+    }
+
+    /**
+     * Send command to device with params and query info immediately
+     * 
+     * @param command command
+     * @param deviceDataClass clazz contains devicedata which should be sent
+     * @param multipleRequestSupported set to true if device supports multipleRequests
+     */
+    public void sendCommandAndQuery(String command, Object deviceDataClass, boolean multipleRequestSupported) {
+        if (multipleRequestSupported) {
             List<TapoRequest> requests = new ArrayList<>();
             requests.add(new TapoRequest(command, deviceDataClass));
             requests.add(new TapoRequest(DEVICE_CMD_GETINFO));
             sendAsyncRequest(new TapoMultipleRequest(requests));
         } else {
-            logger.debug("({}) command not sent because of min_gap: {} <- {}", uid, now, lastSent);
+            sendDeviceCommand(command, deviceDataClass, true);
+            try {
+                TimeUnit.MILLISECONDS.sleep(TAPO_MULTI_COMMAND_OFFSET_MS);
+            } catch (Exception e) {
+            }
+            sendQueryCommand(DEVICE_CMD_GETINFO, true);
         }
     }
 

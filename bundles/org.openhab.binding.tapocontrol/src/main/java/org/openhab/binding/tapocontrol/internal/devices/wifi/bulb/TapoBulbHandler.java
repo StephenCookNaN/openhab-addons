@@ -144,7 +144,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
      */
     protected void switchOnOff(boolean on) {
         bulbData.switchOnOff(on);
-        connector.sendDeviceCommand(bulbData);
+        connector.sendCommandAndQuery(bulbData, bulbData.supportsMultiRequest());
     }
 
     /**
@@ -160,7 +160,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
             bulbData.switchOn();
             bulbData.setBrightness(newBrightness);
         }
-        connector.sendDeviceCommand(bulbData);
+        connector.sendCommandAndQuery(bulbData, bulbData.supportsMultiRequest());
     }
 
     /**
@@ -173,7 +173,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
         bulbData.setHue(command.getHue().intValue());
         bulbData.setSaturation(command.getSaturation().intValue());
         bulbData.setBrightness(command.getBrightness().intValue());
-        connector.sendDeviceCommand(bulbData);
+        connector.sendCommandAndQuery(bulbData, bulbData.supportsMultiRequest());
     }
 
     /**
@@ -184,7 +184,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
     protected void setColorTemp(Integer colorTemp) {
         bulbData.switchOn();
         bulbData.setColorTemp(colorTemp);
-        connector.sendDeviceCommand(bulbData);
+        connector.sendCommandAndQuery(bulbData, bulbData.supportsMultiRequest());
     }
 
     /**
@@ -193,7 +193,8 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
      * @param fxName (String) id of LightEffect
      */
     protected void setLightEffect(String fxName) {
-        connector.sendDeviceCommand(DEVICE_CMD_SET_DYNAIMCLIGHT_FX, new TapoLightEffect(fxName));
+        connector.sendCommandAndQuery(DEVICE_CMD_SET_DYNAIMCLIGHT_FX, new TapoLightEffect(fxName),
+                bulbData.supportsMultiRequest());
     }
 
     /*****************************

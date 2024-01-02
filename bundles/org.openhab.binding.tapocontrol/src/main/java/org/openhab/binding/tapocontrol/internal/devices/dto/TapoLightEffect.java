@@ -190,8 +190,7 @@ public class TapoLightEffect {
             enable = 0;
             return this;
         } else {
-            InputStream is = Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream("/lightningfx/" + fxName + ".json");
+            InputStream is = getClass().getResourceAsStream("/lightningfx/" + fxName + ".json");
             if (is != null) {
                 try {
                     Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
