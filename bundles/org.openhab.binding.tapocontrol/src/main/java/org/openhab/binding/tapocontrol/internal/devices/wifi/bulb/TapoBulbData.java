@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tapocontrol.internal.devices.wifi.bulb;
 
+import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoBaseDeviceData;
 import org.openhab.core.library.types.DecimalType;
@@ -102,6 +104,10 @@ public class TapoBulbData extends TapoBaseDeviceData {
         saturation = value;
     }
 
+    public void setDynamicLightEffectId(String fxId) {
+        dynamicLightEffectId = fxId;
+    }
+
     /***********************************
      *
      * GET VALUES
@@ -111,7 +117,7 @@ public class TapoBulbData extends TapoBaseDeviceData {
         return dynamicLightEffectEnable;
     }
 
-    public String dynamicLightEffectId() {
+    public String getDynamicLightEffectId() {
         return dynamicLightEffectId;
     }
 
@@ -162,7 +168,26 @@ public class TapoBulbData extends TapoBaseDeviceData {
         return timeUsageToday;
     }
 
+    public TapoBulbModeEnum getWorkingMode() {
+        if (dynamicLightEffectEnable) {
+            return TapoBulbModeEnum.LIGHT_FX;
+        } else if (colorTemp == 0) {
+            return TapoBulbModeEnum.COLOR_LIGHT;
+        } else {
+            return TapoBulbModeEnum.WHITE_LIGHT;
+        }
+    }
+
     public boolean supportsMultiRequest() {
         return !getHardwareVersion().startsWith("1");
+    }
+
+    @Override
+    public String toString() {
+        return toJson();
+    }
+
+    public String toJson() {
+        return GSON.toJson(this);
     }
 }

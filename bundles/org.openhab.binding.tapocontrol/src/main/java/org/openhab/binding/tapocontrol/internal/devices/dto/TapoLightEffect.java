@@ -184,6 +184,9 @@ public class TapoLightEffect {
     /**
      * set light fx from fx-name
      * loads fx data from resources/lightningfx/[fxname].json
+     * 
+     * @param fxName name of effect
+     * @return
      */
     public TapoLightEffect setEffect(String fxName) throws TapoErrorHandler {
         if (JSON_KEY_LIGHTNING_EFFECT_OFF.equals(fxName)) {
@@ -198,7 +201,6 @@ public class TapoLightEffect {
                 } catch (Exception e) {
                     throw new TapoErrorHandler(TapoErrorCode.ERR_API_JSON_DECODE_FAIL, fxName);
                 }
-
             } else {
                 throw new TapoErrorHandler(TapoErrorCode.ERR_BINDING_FX_NOT_FOUND, fxName);
             }

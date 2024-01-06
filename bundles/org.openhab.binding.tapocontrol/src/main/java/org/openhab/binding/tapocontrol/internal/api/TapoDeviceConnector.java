@@ -21,7 +21,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -63,6 +62,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     private long lastQuery = 0L;
     private long lastSent = 0L;
     private long lastLogin = 0L;
+    private boolean queryAfterCommand = false;
 
     /***********************
      * Init Class
@@ -160,6 +160,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
      * @param ignoreGap ignore gap to last query. query anyway
      */
     public void sendQueryCommand(String queryCommand, boolean ignoreGap) {
+        queryAfterCommand = false;
         long now = System.currentTimeMillis();
         if (ignoreGap || now > lastQuery + TAPO_QUERY_MIN_GAP_MS) {
             lastQuery = now;
@@ -196,6 +197,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
      * @param ignoreGap ignore gap to last query. query anyway
      */
     public void sendDeviceCommand(String command, Object deviceDataClass, boolean ignoreGap) {
+        queryAfterCommand = false;
         long now = System.currentTimeMillis();
         if (ignoreGap || now > lastSent + TAPO_SEND_MIN_GAP_MS) {
             sendAsyncRequest(new TapoRequest(command, deviceDataClass));
@@ -229,11 +231,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
             sendAsyncRequest(new TapoMultipleRequest(requests));
         } else {
             sendDeviceCommand(command, deviceDataClass, true);
-            try {
-                TimeUnit.MILLISECONDS.sleep(TAPO_MULTI_COMMAND_OFFSET_MS);
-            } catch (Exception e) {
-            }
-            sendQueryCommand(DEVICE_CMD_GETINFO, true);
+            queryAfterCommand = true;
         }
     }
 
@@ -278,6 +276,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
      * @param ignoreGap ignoreGap ignore gap to last query. query anyway
      */
     public void sendMultipleRequest(List<TapoRequest> requests, boolean ignoreGap) {
+        queryAfterCommand = false;
         long now = System.currentTimeMillis();
         if (ignoreGap || now > lastQuery + TAPO_QUERY_MIN_GAP_MS) {
             lastQuery = now;
@@ -418,8 +417,13 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
         if (response.hasError()) {
             logger.debug("({}) set deviceInfo not successful: {}", uid, response);
             device.setError(new TapoErrorHandler(response.errorCode()));
+        } else {
+            logger.trace("({}) setcommand successfull '{}'", uid, response);
+            if (queryAfterCommand) {
+                sendQueryCommand(DEVICE_CMD_GETINFO, true);
+            }
         }
-        logger.trace("({}) setcommand successfull '{}'", uid, response);
+        queryAfterCommand = false;
         this.device.responsePasstrough(response);
     }
 
