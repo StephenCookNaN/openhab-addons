@@ -69,7 +69,6 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(GeneracMobileLinkAccountHandler.class);
-    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private static final String API_BASE = "https://app.mobilelinkgen.com/api";
     private static final String LOGIN_BASE = "https://generacconnectivity.b2clogin.com/generacconnectivity.onmicrosoft.com/B2C_1A_MobileLink_SignIn";
@@ -287,9 +286,8 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             fields.put("password", config.password);
 
             Request selfAssertedRequest = httpClient.POST(LOGIN_BASE + "/SelfAsserted")
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("X-Csrf-Token", signInConfig.csrf)
-                    .param("tx", "StateProperties=" + signInConfig.transId).param("p", "B2C_1A_SignUpOrSigninOnline")
-                    .content(new FormContentProvider(fields));
+                    .header("X-Csrf-Token", signInConfig.csrf).param("tx", "StateProperties=" + signInConfig.transId)
+                    .param("p", "B2C_1A_SignUpOrSigninOnline").content(new FormContentProvider(fields));
 
             ContentResponse selfAssertedResponse = selfAssertedRequest.send();
 
@@ -311,8 +309,8 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             }
 
             Request confirmedRequest = httpClient.newRequest(LOGIN_BASE + "/api/CombinedSigninAndSignup/confirmed")
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).param("csrf_token", signInConfig.csrf)
-                    .param("tx", "StateProperties=" + signInConfig.transId).param("p", "B2C_1A_SignUpOrSigninOnline");
+                    .param("csrf_token", signInConfig.csrf).param("tx", "StateProperties=" + signInConfig.transId)
+                    .param("p", "B2C_1A_SignUpOrSigninOnline");
 
             ContentResponse confirmedResponse = confirmedRequest.send();
 
@@ -364,8 +362,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
         fields.put("state", loginState.attr("value"));
         fields.put("code", loginCode.attr("value"));
 
-        Request loginRequest = httpClient.POST(action).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .content(new FormContentProvider(fields));
+        Request loginRequest = httpClient.POST(action).content(new FormContentProvider(fields));
 
         ContentResponse loginResponse = loginRequest.send();
         if (logger.isTraceEnabled()) {

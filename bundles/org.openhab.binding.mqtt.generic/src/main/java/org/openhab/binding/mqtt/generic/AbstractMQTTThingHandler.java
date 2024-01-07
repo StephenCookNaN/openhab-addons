@@ -83,7 +83,6 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
 
     private AtomicBoolean messageReceived = new AtomicBoolean(false);
     private Map<String, @Nullable ChannelState> availabilityStates = new ConcurrentHashMap<>();
-    private AvailabilityMode availabilityMode = AvailabilityMode.ALL;
 
     public AbstractMQTTThingHandler(Thing thing, int subscribeTimeout) {
         super(thing);
@@ -262,7 +261,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void updateChannelState(ChannelUID channelUID, State value) {
         if (messageReceived.compareAndSet(false, true)) {
-            calculateAndUpdateThingStatus(true);
+            calculateThingStatus();
         }
         super.updateState(channelUID, value);
     }
@@ -270,7 +269,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void triggerChannel(ChannelUID channelUID, String event) {
         if (messageReceived.compareAndSet(false, true)) {
-            calculateAndUpdateThingStatus(true);
+            calculateThingStatus();
         }
         super.triggerChannel(channelUID, event);
     }
@@ -294,11 +293,6 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     }
 
     @Override
-    public void setAvailabilityMode(AvailabilityMode mode) {
-        this.availabilityMode = mode;
-    }
-
-    @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available,
             String payload_not_available) {
         addAvailabilityTopic(availability_topic, payload_available, payload_not_available, null, null);
@@ -316,8 +310,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
                     channelUID, value, new ChannelStateUpdateListener() {
                         @Override
                         public void updateChannelState(ChannelUID channelUID, State value) {
-                            boolean online = value.equals(OnOffType.ON);
-                            calculateAndUpdateThingStatus(online);
+                            calculateThingStatus();
                         }
 
                         @Override
@@ -359,23 +352,18 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void resetMessageReceived() {
         if (messageReceived.compareAndSet(true, false)) {
-            calculateAndUpdateThingStatus(false);
+            calculateThingStatus();
         }
     }
 
-    protected void calculateAndUpdateThingStatus(boolean lastValue) {
+    protected void calculateThingStatus() {
         final Optional<Boolean> availabilityTopicsSeen;
 
         if (availabilityStates.isEmpty()) {
             availabilityTopicsSeen = Optional.empty();
         } else {
-            availabilityTopicsSeen = switch (availabilityMode) {
-                case ALL -> Optional.of(availabilityStates.values().stream().allMatch(
-                        c -> c != null && OnOffType.ON.equals(c.getCache().getChannelState().as(OnOffType.class))));
-                case ANY -> Optional.of(availabilityStates.values().stream().anyMatch(
-                        c -> c != null && OnOffType.ON.equals(c.getCache().getChannelState().as(OnOffType.class))));
-                case LATEST -> Optional.of(lastValue);
-            };
+            availabilityTopicsSeen = Optional.of(availabilityStates.values().stream().allMatch(
+                    c -> c != null && OnOffType.ON.equals(c.getCache().getChannelState().as(OnOffType.class))));
         }
         updateThingStatus(messageReceived.get(), availabilityTopicsSeen);
     }

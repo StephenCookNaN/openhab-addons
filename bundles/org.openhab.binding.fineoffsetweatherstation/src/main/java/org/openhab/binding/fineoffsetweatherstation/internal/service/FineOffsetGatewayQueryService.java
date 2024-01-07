@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetGatewayConfiguration;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionContext;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.DebugDetails;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
@@ -39,7 +38,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class FineOffsetGatewayQueryService extends GatewayQueryService {
-    private static final Protocol PROTOCOL = Protocol.DEFAULT;
     private final Logger logger = LoggerFactory.getLogger(FineOffsetGatewayQueryService.class);
 
     private final FineOffsetDataParser fineOffsetDataParser;
@@ -49,7 +47,7 @@ public class FineOffsetGatewayQueryService extends GatewayQueryService {
     public FineOffsetGatewayQueryService(FineOffsetGatewayConfiguration config,
             @Nullable ThingStatusListener thingStatusListener, ConversionContext conversionContext) {
         super(config, thingStatusListener);
-        this.fineOffsetDataParser = new FineOffsetDataParser(PROTOCOL);
+        this.fineOffsetDataParser = new FineOffsetDataParser(Protocol.DEFAULT);
         this.conversionContext = conversionContext;
     }
 
@@ -94,24 +92,18 @@ public class FineOffsetGatewayQueryService extends GatewayQueryService {
 
         byte[] data = executeCommand(Command.CMD_GW1000_LIVEDATA);
         if (data != null) {
-            DebugDetails debugDetails = new DebugDetails(data, Command.CMD_GW1000_LIVEDATA, PROTOCOL);
-            List<MeasuredValue> measuredValues = fineOffsetDataParser.getMeasuredValues(data, conversionContext,
-                    debugDetails);
+            List<MeasuredValue> measuredValues = fineOffsetDataParser.getMeasuredValues(data, conversionContext);
             for (MeasuredValue measuredValue : measuredValues) {
                 valuePerChannel.put(measuredValue.getChannelId(), measuredValue);
             }
-            logger.trace("{}", debugDetails);
         }
 
         data = executeCommand(Command.CMD_READ_RAIN);
         if (data != null) {
-            DebugDetails debugDetails = new DebugDetails(data, Command.CMD_READ_RAIN, PROTOCOL);
-            List<MeasuredValue> measuredRainValues = fineOffsetDataParser.getRainData(data, conversionContext,
-                    debugDetails);
+            List<MeasuredValue> measuredRainValues = fineOffsetDataParser.getRainData(data, conversionContext);
             for (MeasuredValue measuredValue : measuredRainValues) {
                 valuePerChannel.put(measuredValue.getChannelId(), measuredValue);
             }
-            logger.trace("{}", debugDetails);
         }
 
         return valuePerChannel.values();

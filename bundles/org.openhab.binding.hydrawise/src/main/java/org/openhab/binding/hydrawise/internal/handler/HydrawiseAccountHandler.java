@@ -62,7 +62,6 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
      * Minimum amount of time we can poll for updates
      */
     private static final int MIN_REFRESH_SECONDS = 30;
-    private static final int TOKEN_REFRESH_SECONDS = 60;
     private static final String BASE_URL = "https://app.hydrawise.com/api/v2/";
     private static final String AUTH_URL = BASE_URL + "oauth/access-token";
     private static final String CLIENT_SECRET = "zn3CrjglwNV1";
@@ -75,7 +74,6 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
     private @Nullable OAuthClientService oAuthService;
     private @Nullable HydrawiseGraphQLClient apiClient;
     private @Nullable ScheduledFuture<?> pollFuture;
-    private @Nullable ScheduledFuture<?> tokenFuture;
     private @Nullable Customer lastData;
     private int refresh;
 
@@ -104,7 +102,6 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
     public void dispose() {
         logger.debug("Handler disposed.");
         clearPolling();
-        clearTokenRefresh();
         OAuthClientService oAuthService = this.oAuthService;
         if (oAuthService != null) {
             oAuthService.removeAccessTokenRefreshListener(this);
@@ -188,39 +185,19 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
     }
 
     /**
-     * The API will randomly reject a request with a 401 not authorized, waiting a min and refreshing the token usually
-     * fixes it
-     */
-    private synchronized void retryToken() {
-        clearTokenRefresh();
-        tokenFuture = scheduler.schedule(() -> {
-            try {
-                OAuthClientService oAuthService = this.oAuthService;
-                if (oAuthService != null) {
-                    oAuthService.refreshToken();
-                    initPolling(0, MIN_REFRESH_SECONDS);
-                }
-            } catch (OAuthException | IOException | OAuthResponseException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            }
-        }, TOKEN_REFRESH_SECONDS, TimeUnit.SECONDS);
-    }
-
-    /**
      * Stops/clears this thing's polling future
      */
     private void clearPolling() {
-        clearFuture(pollFuture);
-    }
-
-    private void clearTokenRefresh() {
-        clearFuture(tokenFuture);
-    }
-
-    private void clearFuture(@Nullable final ScheduledFuture<?> future) {
-        if (future != null) {
-            future.cancel(true);
+        ScheduledFuture<?> localFuture = pollFuture;
+        if (isFutureValid(localFuture)) {
+            if (localFuture != null) {
+                localFuture.cancel(false);
+            }
         }
+    }
+
+    private boolean isFutureValid(@Nullable ScheduledFuture<?> future) {
+        return future != null && !future.isCancelled();
     }
 
     private void poll() {
@@ -255,10 +232,8 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         } catch (HydrawiseAuthenticationException e) {
-            logger.debug("Token has been rejected, will try to refresh token in {} secs: {}", TOKEN_REFRESH_SECONDS,
-                    e.getLocalizedMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             clearPolling();
-            retryToken();
         }
     }
 }

@@ -27,9 +27,6 @@ public class HistoryRecordDTO {
     @SerializedName("start")
     @Expose
     private String start;
-    @SerializedName("begin")
-    @Expose
-    private String begin;
     @SerializedName("end")
     @Expose
     private String end;
@@ -48,9 +45,6 @@ public class HistoryRecordDTO {
     @SerializedName("finished")
     @Expose
     private Integer finished;
-    @SerializedName("complete")
-    @Expose
-    private Integer complete;
     @SerializedName("start_type")
     @Expose
     private Integer startType;
@@ -63,12 +57,9 @@ public class HistoryRecordDTO {
     @SerializedName("dust_collection_status")
     @Expose
     private Integer dustCollectionStatus;
-    @SerializedName("map_flag")
-    @Expose
-    private Integer mapFlag;
 
     public final String getStart() {
-        return start != null ? start : begin;
+        return start;
     }
 
     public final void setStart(String start) {
@@ -116,7 +107,7 @@ public class HistoryRecordDTO {
     }
 
     public final Integer getFinished() {
-        return finished != null ? finished : complete;
+        return finished;
     }
 
     public final void setFinished(Integer finished) {
@@ -153,13 +144,5 @@ public class HistoryRecordDTO {
 
     public final void setDustCollectionStatus(Integer dustCollectionStatus) {
         this.dustCollectionStatus = dustCollectionStatus;
-    }
-
-    public final Integer getMapFlag() {
-        return mapFlag;
-    }
-
-    public final void setMapFlag(Integer mapFlag) {
-        this.mapFlag = mapFlag;
     }
 }

@@ -12,23 +12,14 @@
  */
 package org.openhab.binding.opengarage.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * The OpenGarageConfiguration class contains fields mapping thing configuration parameters.
  *
  * @author Paul Smedley - Initial contribution
  */
-@NonNullByDefault
 public class OpenGarageConfiguration {
-    public String hostname = "";
-    public int port = 80;
+    public String hostname;
+    public long port = 80;
     public String password = "opendoor";
-    public int refresh = 10;
-
-    public String doorOpeningState = "OPENING";
-    public String doorOpenState = "OPEN";
-    public String doorClosedState = "CLOSED";
-    public String doorClosingState = "CLOSING";
-    public int doorTransitionTimeSeconds = 17;
+    public long refresh = 10;
 }

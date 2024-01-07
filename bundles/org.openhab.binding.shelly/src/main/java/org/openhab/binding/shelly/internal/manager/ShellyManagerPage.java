@@ -254,8 +254,7 @@ public class ShellyManagerPage {
         properties.put(ATTRIBUTE_APR_TRESHOLD,
                 profile.settings.apRoaming != null ? getOption(profile.settings.apRoaming.threshold) : "n/a");
         properties.put(ATTRIBUTE_PWD_PROTECT,
-                getBool(profile.device.auth) ? "enabled, user=" + getString(profile.settings.login.username)
-                        : "disabled");
+                profile.auth ? "enabled, user=" + getString(profile.settings.login.username) : "disabled");
         String tz = getString(profile.settings.timezone);
         properties.put(ATTRIBUTE_TIMEZONE,
                 (tz.isEmpty() ? "n/a" : tz) + ", auto-detect: " + getBool(profile.settings.tzautodetect));
@@ -538,7 +537,7 @@ public class ShellyManagerPage {
     }
 
     protected static String getDeviceIp(Map<String, String> properties) {
-        return getString(properties.get(ATTRIBUTE_DEVICEIP));
+        return getString(properties.get("deviceIp"));
     }
 
     protected static String getDeviceName(Map<String, String> properties) {

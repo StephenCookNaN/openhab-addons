@@ -15,6 +15,7 @@ package org.openhab.binding.keba.internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -41,8 +42,7 @@ public class KebaBindingConstants {
     public static final String CHANNEL_WALLBOX = "wallbox";
     public static final String CHANNEL_VEHICLE = "vehicle";
     public static final String CHANNEL_PLUG_LOCKED = "locked";
-    public static final String CHANNEL_ENABLED_SYSTEM = "enabledsystem";
-    public static final String CHANNEL_ENABLED_USER = "enableduser";
+    public static final String CHANNEL_ENABLED = "enabled";
     public static final String CHANNEL_PILOT_CURRENT = "maxpilotcurrent";
     public static final String CHANNEL_PILOT_PWM = "maxpilotcurrentdutycyle";
     public static final String CHANNEL_MAX_SYSTEM_CURRENT = "maxsystemcurrent";
@@ -87,7 +87,8 @@ public class KebaBindingConstants {
         private final List<Character> things = new ArrayList<>();
 
         KebaSeries(char... e) {
-            for (char c : e) {
+            Character[] cArray = ArrayUtils.toObject(e);
+            for (char c : cArray) {
                 things.add(c);
             }
         }

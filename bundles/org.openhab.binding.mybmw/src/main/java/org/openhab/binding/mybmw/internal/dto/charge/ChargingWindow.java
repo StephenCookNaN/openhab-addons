@@ -16,30 +16,8 @@ package org.openhab.binding.mybmw.internal.dto.charge;
  * The {@link ChargingWindow} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
- * @author Martin Grassl - refactored to Java Bean
  */
 public class ChargingWindow {
-    private Time start = new Time();
-    private Time end = new Time();
-
-    public Time getStart() {
-        return start;
-    }
-
-    public void setStart(Time start) {
-        this.start = start;
-    }
-
-    public Time getEnd() {
-        return end;
-    }
-
-    public void setEnd(Time end) {
-        this.end = end;
-    }
-
-    @Override
-    public String toString() {
-        return "ChargingWindow [start=" + start + ", end=" + end + "]";
-    }
+    public Time start;
+    public Time end;
 }

@@ -18,8 +18,7 @@ All devices support the following channels:
 | Channel ID              | Item Type                | Read-only | Description                                                             |
 | ----------------------- | ------------------------ | --------- | ----------------------------------------------------------------------- |
 | state                   | Number                   | yes       | current operational state of the wallbox                                |
-| enabledsystem           | Switch                   | yes       | activation state of the wallbox (System)                                |
-| enableduser             | Switch                   | no        | activation state of the wallbox (User)                                  |
+| enabled                 | Switch                   | no        | activation state of the wallbox                                         |
 | maxpresetcurrent        | Number:ElectricCurrent   | no        | maximum current the charging station should deliver to the EV in A      |
 | maxpresetcurrentrange   | Number:Dimensionless     | no        | maximum current the charging station should deliver to the EV in %      |
 | power                   | Number:Power             | yes       | active power delivered by the charging station                          |
@@ -64,8 +63,7 @@ Number:ElectricCurrent    KebaCurrent           "Maximum supply current [%.3f A]
 Number:ElectricCurrent    KebaSystemCurrent     "Maximum system supply current [%.3f A]"  {channel="keba:kecontact:1:maxsystemcurrent"} 
 Number:ElectricCurrent    KebaFailSafeCurrent   "Failsafe supply current [%.3f A]"        {channel="keba:kecontact:1:failsafecurrent"} 
 Number                    KebaState             "Operating State [%s]"                    {channel="keba:kecontact:1:state"}
-Switch                    KebaEnabledSystem     "Enabled (System)"                        {channel="keba:kecontact:1:enabledsystem"}
-Switch                    KebaEnabledUser       "Enabled (User)"                          {channel="keba:kecontact:1:enableduser"}  
+Switch                    KebaSwitch            "Enabled"                                 {channel="keba:kecontact:1:enabled"}
 Switch                    KebaWallboxPlugged    "Plugged into wallbox"                    {channel="keba:kecontact:1:wallbox"}
 Switch                    KebaVehiclePlugged    "Plugged into vehicle"                    {channel="keba:kecontact:1:vehicle"}
 Switch                    KebaPlugLocked        "Plug locked"                             {channel="keba:kecontact:1:locked"}
@@ -92,8 +90,7 @@ sitemap demo label="Main Menu"
  Text label="Charging Station" {
   Text  item=KebaState
   Text  item=KebaUptime
-  Switch  item=KebaEnabledSystem
-  Switch  item=KebaEnabledUser
+  Switch  item=KebaSwitch
   Switch  item=KebaWallboxPlugged
   Switch  item=KebaVehiclePlugged
   Switch  item=KebaPlugLocked

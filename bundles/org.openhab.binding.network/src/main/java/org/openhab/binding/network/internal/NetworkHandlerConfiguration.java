@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.network.internal;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -31,5 +29,4 @@ public class NetworkHandlerConfiguration {
     public Integer retry = 1;
     public Integer refreshInterval = 60000;
     public Integer timeout = 5000;
-    public Set<String> networkInterfaceNames = Set.of();
 }

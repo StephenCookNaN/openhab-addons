@@ -16,7 +16,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -76,7 +75,6 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class HDPowerViewWebTargets {
-    private static final int REQUEST_TIMEOUT_MS = 30_000;
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewWebTargets.class);
 
@@ -583,8 +581,7 @@ public class HDPowerViewWebTargets {
                 logger.trace("JSON command = {}", jsonCommand);
             }
         }
-        Request request = httpClient.newRequest(url).method(method).header("Connection", "close").accept("*/*")
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Request request = httpClient.newRequest(url).method(method).header("Connection", "close").accept("*/*");
         if (query != null) {
             request.param(query.getKey(), query.getValue());
         }

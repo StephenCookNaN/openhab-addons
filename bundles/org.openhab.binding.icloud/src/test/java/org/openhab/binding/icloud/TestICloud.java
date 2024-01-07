@@ -53,7 +53,6 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.TimeSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -464,10 +463,6 @@ public class TestICloud {
 
             @Override
             public void postCommand(ChannelUID channelUID, Command command) {
-            }
-
-            @Override
-            public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
             }
 
             @Override

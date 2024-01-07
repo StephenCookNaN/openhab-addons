@@ -27,7 +27,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandDescriptionBuilder;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
-import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -146,7 +145,7 @@ public abstract class Value {
      * @param command The command to parse.
      * @exception IllegalArgumentException Thrown if for example a text is assigned to a number type.
      */
-    public Type parseMessage(Command command) throws IllegalArgumentException {
+    public Command parseMessage(Command command) throws IllegalArgumentException {
         return parseCommand(command);
     }
 

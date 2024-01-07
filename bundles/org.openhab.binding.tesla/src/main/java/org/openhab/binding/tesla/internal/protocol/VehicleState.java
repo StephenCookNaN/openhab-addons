@@ -57,8 +57,6 @@ public class VehicleState {
     public String vehicle_name;
     public String wheel_type;
 
-    public SoftwareUpdate software_update;
-
     VehicleState() {
     }
 }

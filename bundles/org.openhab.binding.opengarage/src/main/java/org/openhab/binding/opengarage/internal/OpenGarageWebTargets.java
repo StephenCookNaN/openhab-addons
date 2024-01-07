@@ -27,18 +27,16 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class OpenGarageWebTargets {
-    public static int DEFAULT_TIMEOUT_MS = 30000;
+    private static final int TIMEOUT_MS = 30000;
 
     private String getControllerVariablesUri;
     private String changeControllerVariablesUri;
     private final Logger logger = LoggerFactory.getLogger(OpenGarageWebTargets.class);
-    private int timeoutMs;
 
-    public OpenGarageWebTargets(String ipAddress, long port, String password, int timeoutMs) {
+    public OpenGarageWebTargets(String ipAddress, long port, String password) {
         String baseUri = "http://" + ipAddress + ":" + port + "/";
-        this.timeoutMs = timeoutMs;
-        this.getControllerVariablesUri = baseUri + "jc";
-        this.changeControllerVariablesUri = baseUri + "cc?dkey=" + password;
+        getControllerVariablesUri = baseUri + "jc";
+        changeControllerVariablesUri = baseUri + "cc?dkey=" + password;
     }
 
     public ControllerVariables getControllerVariables() throws OpenGarageCommunicationException {
@@ -75,7 +73,7 @@ public class OpenGarageWebTargets {
         String response;
         synchronized (this) {
             try {
-                response = HttpUtil.executeUrl("GET", uriWithParams, this.timeoutMs);
+                response = HttpUtil.executeUrl("GET", uriWithParams, TIMEOUT_MS);
             } catch (IOException ex) {
                 logger.debug("{}", ex.getLocalizedMessage(), ex);
                 // Response will also be set to null if parsing in executeUrl fails so we use null here to make the

@@ -35,26 +35,24 @@ public class NAHomeStatus {
         private @Nullable NAObjectMap<HomeStatusModule> modules;
 
         public NAObjectMap<HomeStatusModule> getModules() {
-            NAObjectMap<HomeStatusModule> local = modules;
-            return local != null ? local : new NAObjectMap<>();
+            NAObjectMap<HomeStatusModule> localModules = modules;
+            return localModules != null ? localModules : new NAObjectMap<>();
         }
     }
 
     public class Energy extends HomeStatus {
-        private @Nullable NAObjectMap<Room> rooms;
+        private NAObjectMap<Room> rooms = new NAObjectMap<>();
 
         public NAObjectMap<Room> getRooms() {
-            NAObjectMap<Room> local = rooms;
-            return local != null ? local : new NAObjectMap<>();
+            return rooms;
         }
     }
 
     public class Security extends HomeStatus {
-        private @Nullable NAObjectMap<HomeStatusPerson> persons;
+        private NAObjectMap<HomeStatusPerson> persons = new NAObjectMap<>();
 
         public NAObjectMap<HomeStatusPerson> getPersons() {
-            NAObjectMap<HomeStatusPerson> local = persons;
-            return local != null ? local : new NAObjectMap<>();
+            return persons;
         }
     }
 

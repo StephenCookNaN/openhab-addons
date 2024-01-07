@@ -197,30 +197,21 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
     public static record TvContext(@Nullable Channel channel, @Nullable PlayerDetails player) {
     }
 
-    private final Map<Integer, @Nullable String> subPaths = new HashMap<>();
+    private final Map<Integer, String> subPaths = new HashMap<>();
 
     public PlayerManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.PLAYER, PlayerResponse.class,
                 session.getUriBuilder().path(THING_PLAYER));
-    }
-
-    private @Nullable String getSubPath(int id) throws FreeboxException {
-        String subPath = subPaths.get(id);
-        if (subPath != null) {
-            return subPath;
-        }
         getDevices().stream().filter(Player::apiAvailable).forEach(player -> {
             String baseUrl = player.baseUrl();
             if (baseUrl != null) {
                 subPaths.put(player.id, baseUrl);
             }
         });
-        return subPaths.get(id);
     }
 
-    public @Nullable Status getPlayerStatus(int id) throws FreeboxException {
-        String subPath = getSubPath(id);
-        return subPath != null ? getSingle(StatusResponse.class, subPath, STATUS_PATH) : null;
+    public Status getPlayerStatus(int id) throws FreeboxException {
+        return getSingle(StatusResponse.class, subPaths.get(id), STATUS_PATH);
     }
 
     // The player API does not allow to directly request a given player like others api parts
@@ -229,9 +220,8 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         return getDevices().stream().filter(player -> player.id == id).findFirst().orElse(null);
     }
 
-    public @Nullable Configuration getConfig(int id) throws FreeboxException {
-        String subPath = getSubPath(id);
-        return subPath != null ? getSingle(ConfigurationResponse.class, subPath, SYSTEM_PATH) : null;
+    public Configuration getConfig(int id) throws FreeboxException {
+        return getSingle(ConfigurationResponse.class, subPaths.get(id), SYSTEM_PATH);
     }
 
     public void sendKey(String ip, String code, String key, boolean longPress, int count) {
@@ -250,12 +240,7 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         }
     }
 
-    public boolean reboot(int id) throws FreeboxException {
-        String subPath = getSubPath(id);
-        if (subPath != null) {
-            post(subPath, SYSTEM_PATH, REBOOT_ACTION);
-            return true;
-        }
-        return false;
+    public void reboot(int id) throws FreeboxException {
+        post(subPaths.get(id), SYSTEM_PATH, REBOOT_ACTION);
     }
 }

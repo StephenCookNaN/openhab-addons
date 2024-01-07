@@ -22,6 +22,7 @@ import io.netty.handler.codec.http.LastHttpContent;
 /**
  * The {@link NettyRtspHandler} is used to decode RTSP traffic into message Strings.
  *
+ *
  * @author Matthew Skinner - Initial contribution
  */
 @NonNullByDefault

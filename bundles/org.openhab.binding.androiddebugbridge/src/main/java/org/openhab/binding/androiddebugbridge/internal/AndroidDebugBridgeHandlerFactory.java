@@ -41,7 +41,6 @@ public class AndroidDebugBridgeHandlerFactory extends BaseThingHandlerFactory {
     public AndroidDebugBridgeHandlerFactory(
             final @Reference AndroidDebugBridgeDynamicCommandDescriptionProvider commandDescriptionProvider) {
         this.commandDescriptionProvider = commandDescriptionProvider;
-        AndroidDebugBridgeDevice.initADB();
     }
 
     @Override

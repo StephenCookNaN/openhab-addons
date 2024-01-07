@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.gpio.internal.configuration;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -23,6 +21,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class GPIOOutputConfiguration extends GPIOConfiguration {
-    public BigDecimal pulse = new BigDecimal(0);
-    public String pulseCommand = "OFF";
+
 }

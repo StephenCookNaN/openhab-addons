@@ -14,6 +14,7 @@ package org.openhab.binding.irtrans.internal.handler;
 
 import static org.openhab.binding.irtrans.internal.IRtransBindingConstants.CHANNEL_IO;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants.Led;
 import org.openhab.binding.irtrans.internal.IrCommand;
 import org.openhab.core.library.types.StringType;
@@ -69,15 +70,12 @@ public class BlasterHandler extends BaseThingHandler implements TransceiverStatu
         if (!(command instanceof RefreshType)) {
             if (channelUID.getId().equals(CHANNEL_IO)) {
                 if (command instanceof StringType) {
-                    String[] remoteCommand = command.toString().split(",", 2);
-                    if (remoteCommand.length < 2) {
-                        logger.warn("Ignoring invalid command '{}'", command);
-                        return;
-                    }
+                    String remoteName = StringUtils.substringBefore(command.toString(), ",");
+                    String irCommandName = StringUtils.substringAfter(command.toString(), ",");
 
                     IrCommand ircommand = new IrCommand();
-                    ircommand.setRemote(remoteCommand[0]);
-                    ircommand.setCommand(remoteCommand[1]);
+                    ircommand.setRemote(remoteName);
+                    ircommand.setCommand(irCommandName);
 
                     IrCommand thingCompatibleCommand = new IrCommand();
                     thingCompatibleCommand.setRemote((String) getConfig().get(REMOTE));

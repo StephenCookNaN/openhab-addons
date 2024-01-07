@@ -101,7 +101,6 @@ public class PushoverAccountHandler extends BaseThingHandler {
      */
     public List<Sound> getSounds() {
         try {
-            PushoverAPIConnection connection = this.connection;
             if (connection != null) {
                 List<Sound> sounds = connection.getSounds();
                 if (sounds != null) {
@@ -146,7 +145,6 @@ public class PushoverAccountHandler extends BaseThingHandler {
     }
 
     public boolean sendMessage(PushoverMessageBuilder messageBuilder) {
-        PushoverAPIConnection connection = this.connection;
         if (connection != null) {
             try {
                 return connection.sendMessage(messageBuilder);
@@ -162,7 +160,6 @@ public class PushoverAccountHandler extends BaseThingHandler {
     }
 
     public String sendPriorityMessage(PushoverMessageBuilder messageBuilder) {
-        PushoverAPIConnection connection = this.connection;
         if (connection != null) {
             try {
                 return connection.sendPriorityMessage(messageBuilder);
@@ -178,7 +175,6 @@ public class PushoverAccountHandler extends BaseThingHandler {
     }
 
     public boolean cancelPriorityMessage(String receipt) {
-        PushoverAPIConnection connection = this.connection;
         if (connection != null) {
             try {
                 return connection.cancelPriorityMessage(receipt);

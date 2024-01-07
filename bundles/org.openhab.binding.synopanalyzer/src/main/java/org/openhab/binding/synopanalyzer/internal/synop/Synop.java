@@ -292,8 +292,8 @@ public abstract class Synop {
         return temperature;
     }
 
-    public @Nullable Integer getWindDirection() {
-        return windDirection != INITIAL_VALUE ? windDirection : null;
+    public int getWindDirection() {
+        return windDirection;
     }
 
     public int getWindSpeed() {

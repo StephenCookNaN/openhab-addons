@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_WASHING_MACHINE;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.POWER_CONSUMPTION_CHANNEL_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CONSUMPTION_CHANNEL_ID;
 
 import java.math.BigDecimal;
 
@@ -47,7 +49,7 @@ import com.google.gson.JsonElement;
 public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineChannelSelector>
         implements ExtendedDeviceStateListener {
 
-    private static final int ENERGY_CONSUMPTION_BYTE_POSITION = 51;
+    private static final int POWER_CONSUMPTION_BYTE_POSITION = 51;
     private static final int WATER_CONSUMPTION_BYTE_POSITION = 53;
     private static final int EXTENDED_STATE_MIN_SIZE_BYTES = 54;
 
@@ -129,9 +131,9 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
         }
 
         BigDecimal kiloWattHoursTenths = BigDecimal
-                .valueOf(extendedDeviceState[ENERGY_CONSUMPTION_BYTE_POSITION] & 0xff);
+                .valueOf(extendedDeviceState[POWER_CONSUMPTION_BYTE_POSITION] & 0xff);
         var kiloWattHours = new QuantityType<>(kiloWattHoursTenths.divide(BigDecimal.valueOf(10)), Units.KILOWATT_HOUR);
-        updateExtendedState(ENERGY_CONSUMPTION_CHANNEL_ID, kiloWattHours);
+        updateExtendedState(POWER_CONSUMPTION_CHANNEL_ID, kiloWattHours);
 
         var litres = new QuantityType<>(BigDecimal.valueOf(extendedDeviceState[WATER_CONSUMPTION_BYTE_POSITION] & 0xff),
                 Units.LITRE);

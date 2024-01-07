@@ -19,15 +19,12 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link SpeedtestHandlerFactory} is responsible for creating things and thing
@@ -40,12 +37,6 @@ import org.osgi.service.component.annotations.Reference;
 public class SpeedtestHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SPEEDTEST);
-    private final TimeZoneProvider timeZoneProvider;
-
-    @Activate
-    public SpeedtestHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider) {
-        this.timeZoneProvider = timeZoneProvider;
-    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -57,7 +48,7 @@ public class SpeedtestHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SPEEDTEST.equals(thingTypeUID)) {
-            return new SpeedtestHandler(thing, timeZoneProvider);
+            return new SpeedtestHandler(thing);
         }
 
         return null;

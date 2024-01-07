@@ -109,6 +109,5 @@ Frame label="Neato BotVac Connected" {
 ### neato.things
 
 ```java
-Bridge neato:neatoaccount:neatobridge "Neato Account Bridge" [ email="yours@example.com", password="neato-account-password" ]
-Thing neato:vacuumcleaner:fanndamm "Neato BotVac" (neato:neatoaccount:neatobridge) [ serial="vacuumcleaner-serial", secret="secret-string" ]
+neato:vacuumcleaner:fanndamm [ serial="vacuumcleaner-serial", secret="secret-string"]
 ```

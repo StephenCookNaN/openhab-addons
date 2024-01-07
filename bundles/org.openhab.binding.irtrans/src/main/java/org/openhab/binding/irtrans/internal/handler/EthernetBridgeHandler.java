@@ -35,6 +35,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants.Led;
 import org.openhab.binding.irtrans.internal.IrCommand;
@@ -49,7 +51,6 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.util.HexUtils;
-import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -178,11 +179,11 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
         }
     }
 
-    public boolean registerTransceiverStatusListener(TransceiverStatusListener transceiverStatusListener) {
+    public boolean registerTransceiverStatusListener(@NonNull TransceiverStatusListener transceiverStatusListener) {
         return transceiverStatusListeners.add(transceiverStatusListener);
     }
 
-    public boolean unregisterTransceiverStatusListener(TransceiverStatusListener transceiverStatusListener) {
+    public boolean unregisterTransceiverStatusListener(@NonNull TransceiverStatusListener transceiverStatusListener) {
         return transceiverStatusListeners.remove(transceiverStatusListener);
     }
 
@@ -276,15 +277,12 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                 if (channel.getChannelTypeUID() != null
                         && channel.getChannelTypeUID().getId().equals(IRtransBindingConstants.BLASTER_CHANNEL_TYPE)) {
                     if (command instanceof StringType) {
-                        String[] remoteCommand = command.toString().split(",", 2);
-                        if (remoteCommand.length < 2) {
-                            logger.warn("Ignoring invalid command '{}'", command);
-                            return;
-                        }
+                        String remoteName = StringUtils.substringBefore(command.toString(), ",");
+                        String irCommandName = StringUtils.substringAfter(command.toString(), ",");
 
                         IrCommand ircommand = new IrCommand();
-                        ircommand.setRemote(remoteCommand[0]);
-                        ircommand.setCommand(remoteCommand[1]);
+                        ircommand.setRemote(remoteName);
+                        ircommand.setCommand(irCommandName);
 
                         IrCommand thingCompatibleCommand = new IrCommand();
                         thingCompatibleCommand.setRemote((String) channelConfiguration.get(REMOTE));
@@ -345,12 +343,14 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
 
             if (response != null) {
                 String message = stripByteCount(response).split("\0")[0];
-                if (message.contains("VERSION")) {
-                    logger.info("'{}' matches an IRtrans device with firmware {}", getThing().getUID(), message);
-                    getConfig().put(FIRMWARE_VERSION, message);
-                } else {
-                    logger.debug("Received some non-compliant garbage ({})", message);
-                    onConnectionLost();
+                if (message != null) {
+                    if (message.contains("VERSION")) {
+                        logger.info("'{}' matches an IRtrans device with firmware {}", getThing().getUID(), message);
+                        getConfig().put(FIRMWARE_VERSION, message);
+                    } else {
+                        logger.debug("Received some non-compliant garbage ({})", message);
+                        onConnectionLost();
+                    }
                 }
             } else {
                 try {
@@ -441,17 +441,20 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
         if (response != null) {
             String message = stripByteCount(response).split("\0")[0];
             logger.trace("commands returned {}", message);
-            if (message.contains("COMMANDLIST")) {
-                commandList = message.split(",");
-            } else {
-                logger.debug("Received some non-compliant command ({})", message);
-                onConnectionLost();
+            if (message != null) {
+                if (message.contains("COMMANDLIST")) {
+                    commandList = message.split(",");
+                } else {
+                    logger.debug("Received some non-compliant command ({})", message);
+                    onConnectionLost();
+                }
             }
         } else {
             logger.debug("Did not receive an answer from the IRtrans transceiver for '{}' - Parsing is skipped",
                     getThing().getUID());
             onConnectionLost();
         }
+
         return commandList;
     }
 
@@ -463,11 +466,13 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
         if (response != null) {
             String message = stripByteCount(response).split("\0")[0];
             logger.trace("remotes returned {}", message);
-            if (message.contains("REMOTELIST")) {
-                remoteList = message.split(",");
-            } else {
-                logger.debug("Received some non-compliant command ({})", message);
-                onConnectionLost();
+            if (message != null) {
+                if (message.contains("REMOTELIST")) {
+                    remoteList = message.split(",");
+                } else {
+                    logger.debug("Received some non-compliant command ({})", message);
+                    onConnectionLost();
+                }
             }
         } else {
             logger.debug("Did not receive an answer from the IRtrans transceiver for '{}' - Parsing is skipped",
@@ -488,7 +493,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
 
             if (response != null) {
                 String message = stripByteCount(response).split("\0")[0];
-                if (message.contains("RESULT OK")) {
+                if (message != null && message.contains("RESULT OK")) {
                     return true;
                 } else {
                     logger.debug("Received an unexpected response from the IRtrans transceiver: '{}'", message);

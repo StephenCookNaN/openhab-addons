@@ -12,6 +12,7 @@
  */
 package org.openhab.io.neeo.internal.models;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.io.neeo.internal.NeeoConstants;
@@ -41,8 +42,8 @@ public class NeeoThingUID extends ThingUID {
      * @param thingId the thing ID
      */
     public NeeoThingUID(String thingId) {
-        super(thingId.startsWith(NeeoConstants.NEEO_ADAPTER_PREFIX)
-                ? thingId.substring(NeeoConstants.NEEO_ADAPTER_PREFIX.length())
+        super(StringUtils.startsWith(thingId, NeeoConstants.NEEO_ADAPTER_PREFIX)
+                ? StringUtils.substring(thingId, NeeoConstants.NEEO_ADAPTER_PREFIX.length())
                 : thingId);
     }
 

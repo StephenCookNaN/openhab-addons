@@ -228,8 +228,7 @@ public class PlexApiConnector {
             response = HttpUtil.executeUrl(method, url, headers, null, null, REQUEST_TIMEOUT_MS);
         } else {
             // Requests sent to the local server need to bypass certificate checking via the custom httpClient
-            final Request request = httpClient.newRequest(url).method(HttpUtil.createHttpMethod(method))
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            final Request request = httpClient.newRequest(url).method(HttpUtil.createHttpMethod(method));
             for (String httpHeaderKey : headers.stringPropertyNames()) {
                 if (httpHeaderKey.equalsIgnoreCase(HttpHeader.USER_AGENT.toString())) {
                     request.agent(headers.getProperty(httpHeaderKey));

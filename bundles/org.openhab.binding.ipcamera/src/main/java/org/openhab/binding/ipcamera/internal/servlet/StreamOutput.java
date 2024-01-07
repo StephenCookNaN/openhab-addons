@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Matthew Skinner - Initial contribution
  */
+
 @NonNullByDefault
 public class StreamOutput {
     public final Logger logger = LoggerFactory.getLogger(getClass());
@@ -78,7 +79,7 @@ public class StreamOutput {
         try {
             fifo.add(frame);
         } catch (IllegalStateException e) {
-            logger.debug("FIFO buffer has run out of space: {}", e.getMessage());
+            logger.debug("FIFO buffer has run out of space:{}", e.getMessage());
             fifo.remove();
             fifo.add(frame);
         }

@@ -19,7 +19,6 @@ import org.openhab.binding.lutron.internal.protocol.leap.dto.Area;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonGroup;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Device;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
-import org.openhab.binding.lutron.internal.protocol.leap.dto.Project;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 
 /**
@@ -29,10 +28,6 @@ import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
  */
 @NonNullByDefault
 public interface LeapMessageParserCallbacks {
-
-    void handleProjectDefinition(Project project);
-
-    void handleDeviceDefinition(Device device);
 
     void validMessageReceived(String communiqueType);
 
@@ -44,7 +39,7 @@ public interface LeapMessageParserCallbacks {
 
     void handleMultipleButtonGroupDefinition(List<ButtonGroup> buttonGroupList);
 
-    void handleMultipleDeviceDefinition(List<Device> deviceList);
+    void handleMultipleDeviceDefintion(List<Device> deviceList);
 
     void handleMultipleAreaDefinition(List<Area> areaList);
 

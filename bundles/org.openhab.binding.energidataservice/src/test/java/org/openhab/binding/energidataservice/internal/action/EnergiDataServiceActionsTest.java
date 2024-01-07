@@ -109,10 +109,10 @@ public class EnergiDataServiceActionsTest {
     }
 
     @Test
-    void getPricesGridTariff() throws IOException {
+    void getPricesNetTariff() throws IOException {
         mockCommonDatasets(actions);
 
-        Map<Instant, BigDecimal> actual = actions.getPrices("GridTariff");
+        Map<Instant, BigDecimal> actual = actions.getPrices("NetTariff");
         assertThat(actual.size(), is(60));
         assertThat(actual.get(Instant.parse("2023-02-04T12:00:00Z")), is(equalTo(new BigDecimal("0.432225"))));
         assertThat(actual.get(Instant.parse("2023-02-04T16:00:00Z")), is(equalTo(new BigDecimal("1.05619"))));
@@ -139,30 +139,30 @@ public class EnergiDataServiceActionsTest {
     }
 
     @Test
-    void getPricesTransmissionGridTariff() throws IOException {
+    void getPricesTransmissionNetTariff() throws IOException {
         mockCommonDatasets(actions);
 
-        Map<Instant, BigDecimal> actual = actions.getPrices("TransmissionGridTariff");
+        Map<Instant, BigDecimal> actual = actions.getPrices("TransmissionNetTariff");
         assertThat(actual.size(), is(60));
         assertThat(actual.get(Instant.parse("2023-02-04T12:00:00Z")), is(equalTo(new BigDecimal("0.058"))));
         assertThat(actual.get(Instant.parse("2023-02-04T16:00:00Z")), is(equalTo(new BigDecimal("0.058"))));
     }
 
     @Test
-    void getPricesSpotPriceGridTariff() throws IOException {
+    void getPricesSpotPriceNetTariff() throws IOException {
         mockCommonDatasets(actions);
 
-        Map<Instant, BigDecimal> actual = actions.getPrices("SpotPrice,GridTariff");
+        Map<Instant, BigDecimal> actual = actions.getPrices("SpotPrice,NetTariff");
         assertThat(actual.size(), is(35));
         assertThat(actual.get(Instant.parse("2023-02-04T12:00:00Z")), is(equalTo(new BigDecimal("1.425065027"))));
         assertThat(actual.get(Instant.parse("2023-02-04T16:00:00Z")), is(equalTo(new BigDecimal("2.323870054"))));
     }
 
     @Test
-    void getPricesSpotPriceGridTariffElectricityTax() throws IOException {
+    void getPricesSpotPriceNetTariffElectricityTax() throws IOException {
         mockCommonDatasets(actions);
 
-        Map<Instant, BigDecimal> actual = actions.getPrices("SpotPrice,GridTariff,ElectricityTax");
+        Map<Instant, BigDecimal> actual = actions.getPrices("SpotPrice,NetTariff,ElectricityTax");
         assertThat(actual.size(), is(35));
         assertThat(actual.get(Instant.parse("2023-02-04T12:00:00Z")), is(equalTo(new BigDecimal("1.433065027"))));
         assertThat(actual.get(Instant.parse("2023-02-04T16:00:00Z")), is(equalTo(new BigDecimal("2.331870054"))));
@@ -175,34 +175,15 @@ public class EnergiDataServiceActionsTest {
         Map<Instant, BigDecimal> actual = actions.getPrices();
         assertThat(actual.size(), is(35));
         assertThat(actual.get(Instant.parse("2023-02-04T12:00:00Z")), is(equalTo(new BigDecimal("1.545065027"))));
-        assertThat(actual.get(Instant.parse("2023-02-04T15:00:00Z")), is(equalTo(new BigDecimal("1.708765039"))));
         assertThat(actual.get(Instant.parse("2023-02-04T16:00:00Z")), is(equalTo(new BigDecimal("2.443870054"))));
     }
 
     @Test
-    void getPricesTotalFullElectricityTax() throws IOException {
-        mockCommonDatasets(actions, "SpotPrices20231003.json");
-
-        Map<Instant, BigDecimal> actual = actions.getPrices();
-        assertThat(actual.size(), is(4));
-        assertThat(actual.get(Instant.parse("2023-10-03T20:00:00Z")), is(equalTo(new BigDecimal("0.829059999"))));
-    }
-
-    @Test
-    void getPricesTotalReducedElectricityTax() throws IOException {
-        mockCommonDatasets(actions, "SpotPrices20231003.json", true);
-
-        Map<Instant, BigDecimal> actual = actions.getPrices();
-        assertThat(actual.size(), is(4));
-        assertThat(actual.get(Instant.parse("2023-10-03T20:00:00Z")), is(equalTo(new BigDecimal("0.140059999"))));
-    }
-
-    @Test
-    void getPricesTotalAllComponents() throws IOException {
+    void getPricesTotalAllElements() throws IOException {
         mockCommonDatasets(actions);
 
         Map<Instant, BigDecimal> actual = actions
-                .getPrices("spotprice,gridtariff,systemtariff,electricitytax,transmissiongridtariff");
+                .getPrices("spotprice,nettariff,systemtariff,electricitytax,transmissionnettariff");
         assertThat(actual.size(), is(35));
         assertThat(actual.get(Instant.parse("2023-02-04T12:00:00Z")), is(equalTo(new BigDecimal("1.545065027"))));
         assertThat(actual.get(Instant.parse("2023-02-04T15:00:00Z")), is(equalTo(new BigDecimal("1.708765039"))));
@@ -210,10 +191,10 @@ public class EnergiDataServiceActionsTest {
     }
 
     @Test
-    void getPricesInvalidPriceComponent() throws IOException {
+    void getPricesInvalidPriceElement() throws IOException {
         mockCommonDatasets(actions);
 
-        Map<Instant, BigDecimal> actual = actions.getPrices("spotprice,gridtarif");
+        Map<Instant, BigDecimal> actual = actions.getPrices("spotprice,nettarif");
         assertThat(actual.size(), is(0));
     }
 
@@ -222,7 +203,7 @@ public class EnergiDataServiceActionsTest {
         mockCommonDatasets(actions);
         when(handler.getCurrency()).thenReturn(EnergiDataServiceBindingConstants.CURRENCY_EUR);
 
-        Map<Instant, BigDecimal> actual = actions.getPrices("spotprice,gridtariff");
+        Map<Instant, BigDecimal> actual = actions.getPrices("spotprice,nettariff");
         assertThat(actual.size(), is(0));
     }
 
@@ -393,19 +374,14 @@ public class EnergiDataServiceActionsTest {
     }
 
     private void mockCommonDatasets(EnergiDataServiceActions actions, String spotPricesFilename) throws IOException {
-        mockCommonDatasets(actions, spotPricesFilename, false);
-    }
-
-    private void mockCommonDatasets(EnergiDataServiceActions actions, String spotPricesFilename,
-            boolean isReducedElectricityTax) throws IOException {
         SpotPrice[] spotPriceRecords = getObjectFromJson(spotPricesFilename, SpotPrice[].class);
         Map<Instant, BigDecimal> spotPrices = Arrays.stream(spotPriceRecords)
                 .collect(Collectors.toMap(SpotPrice::hourStart, SpotPrice::spotPrice));
 
         PriceListParser priceListParser = new PriceListParser(
                 Clock.fixed(spotPriceRecords[0].hourStart, EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
-        DatahubPricelistRecords datahubRecords = getObjectFromJson("GridTariffs.json", DatahubPricelistRecords.class);
-        Map<Instant, BigDecimal> gridTariffs = priceListParser
+        DatahubPricelistRecords datahubRecords = getObjectFromJson("NetTariffs.json", DatahubPricelistRecords.class);
+        Map<Instant, BigDecimal> netTariffs = priceListParser
                 .toHourly(Arrays.stream(datahubRecords.records()).toList());
         datahubRecords = getObjectFromJson("SystemTariffs.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> systemTariffs = priceListParser
@@ -413,21 +389,16 @@ public class EnergiDataServiceActionsTest {
         datahubRecords = getObjectFromJson("ElectricityTaxes.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> electricityTaxes = priceListParser
                 .toHourly(Arrays.stream(datahubRecords.records()).toList());
-        datahubRecords = getObjectFromJson("ReducedElectricityTaxes.json", DatahubPricelistRecords.class);
-        Map<Instant, BigDecimal> reducedElectricityTaxes = priceListParser
-                .toHourly(Arrays.stream(datahubRecords.records()).toList());
-        datahubRecords = getObjectFromJson("TransmissionGridTariffs.json", DatahubPricelistRecords.class);
-        Map<Instant, BigDecimal> transmissionGridTariffs = priceListParser
+        datahubRecords = getObjectFromJson("TransmissionNetTariffs.json", DatahubPricelistRecords.class);
+        Map<Instant, BigDecimal> transmissionNetTariffs = priceListParser
                 .toHourly(Arrays.stream(datahubRecords.records()).toList());
 
         when(handler.getSpotPrices()).thenReturn(spotPrices);
-        when(handler.getTariffs(DatahubTariff.GRID_TARIFF)).thenReturn(gridTariffs);
+        when(handler.getTariffs(DatahubTariff.NET_TARIFF)).thenReturn(netTariffs);
         when(handler.getTariffs(DatahubTariff.SYSTEM_TARIFF)).thenReturn(systemTariffs);
-        when(handler.getTariffs(DatahubTariff.TRANSMISSION_GRID_TARIFF)).thenReturn(transmissionGridTariffs);
         when(handler.getTariffs(DatahubTariff.ELECTRICITY_TAX)).thenReturn(electricityTaxes);
-        when(handler.getTariffs(DatahubTariff.REDUCED_ELECTRICITY_TAX)).thenReturn(reducedElectricityTaxes);
+        when(handler.getTariffs(DatahubTariff.TRANSMISSION_NET_TARIFF)).thenReturn(transmissionNetTariffs);
         when(handler.getCurrency()).thenReturn(EnergiDataServiceBindingConstants.CURRENCY_DKK);
-        when(handler.isReducedElectricityTax()).thenReturn(isReducedElectricityTax);
         actions.setThingHandler(handler);
     }
 }

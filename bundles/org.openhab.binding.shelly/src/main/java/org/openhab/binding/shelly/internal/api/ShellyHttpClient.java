@@ -69,7 +69,6 @@ public class ShellyHttpClient {
     protected int timeoutErrors = 0;
     protected int timeoutsRecovered = 0;
     private ShellyDeviceProfile profile;
-    protected boolean basicAuth = false;
 
     public ShellyHttpClient(String thingName, ShellyThingInterface thing) {
         this(thingName, thing.getThingConfig(), thing.getHttpClient());
@@ -82,6 +81,9 @@ public class ShellyHttpClient {
         setConfig(thingName, config);
         this.httpClient = httpClient;
         this.httpClient.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
+    }
+
+    public void initialize() throws ShellyApiException {
     }
 
     public void setConfig(String thingName, ShellyThingConfiguration config) {
@@ -111,8 +113,6 @@ public class ShellyHttpClient {
         while (retries > 0) {
             try {
                 apiResult = innerRequest(HttpMethod.GET, uri, null, "");
-
-                // If call doesn't throw an exception the device is reachable == no timeout
                 if (timeout) {
                     logger.debug("{}: API timeout #{}/{} recovered ({})", thingName, timeoutErrors, timeoutsRecovered,
                             apiResult.getUrl());
@@ -120,12 +120,6 @@ public class ShellyHttpClient {
                 }
                 return apiResult.response; // successful
             } catch (ShellyApiException e) {
-                if (e.isHttpAccessUnauthorized() && !profile.isGen2 && !basicAuth && !config.password.isEmpty()) {
-                    logger.debug("{}: Access is unauthorized, auto-activate basic auth", thingName);
-                    basicAuth = true;
-                    apiResult = innerRequest(HttpMethod.GET, uri, null, "");
-                }
-
                 if (e.isConnectionError()
                         || (!e.isTimeout() && !apiResult.isHttpServerError()) && !apiResult.isNotFound()
                         || profile.hasBattery || (retries == 0)) {
@@ -134,11 +128,9 @@ public class ShellyHttpClient {
                 }
 
                 timeout = true;
-                timeoutErrors++; // count the retries
                 retries--;
-                if (profile.alwaysOn) {
-                    logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
-                }
+                timeoutErrors++; // count the retries
+                logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
             }
         }
         throw new ShellyApiException("API Timeout or inconsistent result"); // successful
@@ -172,7 +164,7 @@ public class ShellyHttpClient {
                     authHeader = formatAuthResponse(uri,
                             buildAuthResponse(uri, auth, SHELLY2_AUTHDEF_USER, config.password));
                 } else {
-                    if (basicAuth) {
+                    if (!uri.equals(SHELLYRPC_ENDPOINT)) {
                         String bearer = config.userId + ":" + config.password;
                         authHeader = HTTP_AUTH_TYPE_BASIC + " " + Base64.getEncoder().encodeToString(bearer.getBytes());
                     }
@@ -182,7 +174,7 @@ public class ShellyHttpClient {
                 }
             }
             fillPostData(request, data);
-            logger.trace("{}: HTTP {} {}\n{}\n{}", thingName, method, url, request.getHeaders(), data);
+            logger.trace("{}: HTTP {} for {} {}\n{}", thingName, method, url, data, request.getHeaders());
 
             // Do request and get response
             ContentResponse contentResponse = request.send();

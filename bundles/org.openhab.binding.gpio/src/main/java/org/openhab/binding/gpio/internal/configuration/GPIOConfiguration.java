@@ -13,6 +13,7 @@
 package org.openhab.binding.gpio.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link GPIOConfiguration} class contains fields mapping thing configuration parameters.
@@ -25,7 +26,7 @@ public class GPIOConfiguration {
     /**
      * The id of the gpio pin.
      */
-    public Integer gpioId = 0;
+    public @Nullable Integer gpioId;
 
     /**
      * Should the input/output be inverted?

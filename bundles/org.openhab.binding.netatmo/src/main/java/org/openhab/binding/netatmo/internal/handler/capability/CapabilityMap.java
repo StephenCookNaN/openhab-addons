@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * {@link CapabilityMap} is a specialized Map designed to store capabilities
@@ -40,13 +39,5 @@ public class CapabilityMap extends ConcurrentHashMap<Class<?>, Capability> {
         @SuppressWarnings("unchecked")
         T cap = (T) super.get(clazz);
         return Optional.ofNullable(cap);
-    }
-
-    public <T extends Capability> void remove(Class<?> clazz) {
-        @Nullable
-        Capability cap = super.remove(clazz);
-        if (cap != null) {
-            cap.dispose();
-        }
     }
 }

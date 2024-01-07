@@ -49,7 +49,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
     private final String host;
     private final int port;
     private final String path;
-    private final URI baseUri;
+    private final URI base_uri;
 
     private final WebSocketClient webSocketClient;
 
@@ -59,8 +59,8 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
 
     private final SonyAudioEventListener listener;
 
-    private int minVolume = 0;
-    private int maxVolume = 50;
+    private int min_volume = 0;
+    private int max_volume = 50;
 
     private final Gson gson;
 
@@ -73,14 +73,14 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
         this.gson = new Gson();
         this.webSocketClient = webSocketClient;
 
-        baseUri = new URI(String.format("ws://%s:%d/%s", host, port, path)).normalize();
+        base_uri = new URI(String.format("ws://%s:%d/%s", host, port, path)).normalize();
 
-        URI wsAvContentUri = baseUri.resolve(baseUri.getPath() + "/avContent").normalize();
+        URI wsAvContentUri = base_uri.resolve(base_uri.getPath() + "/avContent").normalize();
         avContentSocket = new SonyAudioClientSocket(this, wsAvContentUri, scheduler);
-        URI wsAudioUri = baseUri.resolve(baseUri.getPath() + "/audio").normalize();
+        URI wsAudioUri = base_uri.resolve(base_uri.getPath() + "/audio").normalize();
         audioSocket = new SonyAudioClientSocket(this, wsAudioUri, scheduler);
 
-        URI wsSystemUri = baseUri.resolve(baseUri.getPath() + "/system").normalize();
+        URI wsSystemUri = base_uri.resolve(base_uri.getPath() + "/system").normalize();
         systemSocket = new SonyAudioClientSocket(this, wsSystemUri, scheduler);
     }
 
@@ -123,7 +123,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
             input.input = param.get("uri").getAsString();
             if (param.has("broadcastFreq")) {
                 int freq = param.get("broadcastFreq").getAsInt();
-                input.radioFrequency = Optional.of(freq);
+                input.radio_freq = Optional.of(freq);
                 checkRadioPreset(input.input);
             }
             listener.updateInput(zone, input);
@@ -134,7 +134,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
             SonyAudioVolume volume = new SonyAudioVolume();
 
             int rawVolume = param.get("volume").getAsInt();
-            volume.volume = Math.round(100 * (rawVolume - minVolume) / (maxVolume - minVolume));
+            volume.volume = Math.round(100 * (rawVolume - min_volume) / (max_volume - min_volume));
 
             volume.mute = "on".equalsIgnoreCase(param.get("mute").getAsString());
             listener.updateVolume(zone, volume);
@@ -274,8 +274,8 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
     }
 
     public String getConnectionName() {
-        if (baseUri != null) {
-            return baseUri.toString();
+        if (base_uri != null) {
+            return base_uri.toString();
         }
         return String.format("ws://%s:%d/%s", host, port, path);
     }
@@ -292,9 +292,8 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
                 Iterator<JsonElement> terminals = element.getAsJsonArray().get(0).getAsJsonArray().iterator();
                 while (terminals.hasNext()) {
                     JsonObject terminal = terminals.next().getAsJsonObject();
-                    String zoneUri = "extOutput:zone?zone=" + Integer.toString(zone);
                     String uri = terminal.get("uri").getAsString();
-                    if (uri.equalsIgnoreCase(zoneUri)) {
+                    if (uri.equalsIgnoreCase("extOutput:zone?zone=" + Integer.toString(zone))) {
                         return "active".equalsIgnoreCase(terminal.get("active").getAsString()) ? true : false;
                     }
                 }
@@ -339,7 +338,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
 
     public class SonyAudioInput {
         public String input = "";
-        public Optional<Integer> radioFrequency = Optional.empty();
+        public Optional<Integer> radio_freq = Optional.empty();
     }
 
     public SonyAudioInput getInput() throws IOException {
@@ -368,7 +367,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
 
             if (result.has("broadcastFreq")) {
                 int freq = result.get("broadcastFreq").getAsInt();
-                ret.radioFrequency = Optional.of(freq);
+                ret.radio_freq = Optional.of(freq);
             }
             return ret;
         }
@@ -426,9 +425,9 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
             SonyAudioVolume ret = new SonyAudioVolume();
 
             int volume = result.get("volume").getAsInt();
-            minVolume = result.get("minVolume").getAsInt();
-            maxVolume = result.get("maxVolume").getAsInt();
-            int vol = Math.round(100 * (volume - minVolume) / (maxVolume - minVolume));
+            min_volume = result.get("minVolume").getAsInt();
+            max_volume = result.get("maxVolume").getAsInt();
+            int vol = Math.round(100 * (volume - min_volume) / (max_volume - min_volume));
             if (vol < 0) {
                 vol = 0;
             }
@@ -446,7 +445,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
         if (audioSocket == null) {
             throw new IOException("Audio Socket not connected");
         }
-        SetAudioVolume setAudioVolume = new SetAudioVolume(volume, minVolume, maxVolume);
+        SetAudioVolume setAudioVolume = new SetAudioVolume(volume, min_volume, max_volume);
         audioSocket.callMethod(setAudioVolume);
     }
 
@@ -462,7 +461,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
         if (audioSocket == null) {
             throw new IOException("Audio Socket not connected");
         }
-        SetAudioVolume setAudioVolume = new SetAudioVolume(zone, volume, minVolume, maxVolume);
+        SetAudioVolume setAudioVolume = new SetAudioVolume(zone, volume, min_volume, max_volume);
         audioSocket.callMethod(setAudioVolume);
     }
 

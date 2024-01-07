@@ -25,7 +25,6 @@ import org.openhab.binding.lutron.internal.protocol.leap.dto.ExceptionDetail;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Header;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroupStatus;
-import org.openhab.binding.lutron.internal.protocol.leap.dto.Project;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -182,12 +181,6 @@ public class LeapMessageParser {
                 case "OneZoneStatus":
                     parseOneZoneStatus(body);
                     break;
-                case "OneProjectDefinition":
-                    parseOneProjectDefinition(body);
-                    break;
-                case "OneDeviceDefinition":
-                    parseOneDeviceDefinition(body);
-                    break;
                 case "MultipleAreaDefinition":
                     parseMultipleAreaDefinition(body);
                     break;
@@ -204,9 +197,6 @@ public class LeapMessageParser {
                     parseMultipleOccupancyGroupStatus(body);
                     break;
                 case "MultipleVirtualButtonDefinition":
-                    break;
-                case "MultipleZoneStatus":
-                    parseMultipleZoneStatus(body);
                     break;
                 default:
                     logger.debug("Unknown MessageBodyType received: {}", messageBodyType);
@@ -307,21 +297,13 @@ public class LeapMessageParser {
         }
     }
 
-    private void parseMultipleZoneStatus(JsonObject messageBody) {
-        List<ZoneStatus> statusList = parseBodyMultiple(messageBody, "ZoneStatuses", ZoneStatus.class);
-        for (ZoneStatus status : statusList) {
-            logger.debug("Setting zone {} to level: {}", status.href, status.level);
-            callback.handleZoneUpdate(status);
-        }
-    }
-
     /**
      * Parses a MultipleDeviceDefinition message body and loads the zoneToDevice and deviceToZone maps. Also passes the
      * device data on to the discovery service and calls setBridgeProperties() with the hub's device entry.
      */
     private void parseMultipleDeviceDefinition(JsonObject messageBody) {
         List<Device> deviceList = parseBodyMultiple(messageBody, "Devices", Device.class);
-        callback.handleMultipleDeviceDefinition(deviceList);
+        callback.handleMultipleDeviceDefintion(deviceList);
     }
 
     /**
@@ -330,19 +312,5 @@ public class LeapMessageParser {
     private void parseMultipleButtonGroupDefinition(JsonObject messageBody) {
         List<ButtonGroup> buttonGroupList = parseBodyMultiple(messageBody, "ButtonGroups", ButtonGroup.class);
         callback.handleMultipleButtonGroupDefinition(buttonGroupList);
-    }
-
-    private void parseOneProjectDefinition(JsonObject messageBody) {
-        Project project = parseBodySingle(messageBody, "Project", Project.class);
-        if (project != null) {
-            callback.handleProjectDefinition(project);
-        }
-    }
-
-    private void parseOneDeviceDefinition(JsonObject messageBody) {
-        Device device = parseBodySingle(messageBody, "Device", Device.class);
-        if (device != null) {
-            callback.handleDeviceDefinition(device);
-        }
     }
 }

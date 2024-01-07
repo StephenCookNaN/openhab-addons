@@ -35,9 +35,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -50,7 +48,6 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,6 +96,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             new BigDecimal("-0.5179722"), new BigDecimal("1.5317403"), new BigDecimal("-2.4243787"),
             new BigDecimal("1.925865"), new BigDecimal("-0.471106") };
 
+    private static final BigDecimal BIG_DECIMAL_153 = new BigDecimal(153);
     private static final BigDecimal BIG_DECIMAL_217 = new BigDecimal(217);
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -156,20 +154,13 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
         String bulbLevel = Helper.resolveJSON(messageJSON, "\"level\":", 3);
         if (!bulbLevel.isEmpty()) {
             if ("0".equals(bulbLevel) || "OFF".equals(bulbState)) {
-                if (!hasRGB()) {
-                    changeChannel(CHANNEL_LEVEL, OnOffType.OFF);
-                }
+                changeChannel(CHANNEL_LEVEL, OnOffType.OFF);
             } else {
                 tempBulbLevel = new PercentType(Integer.valueOf(bulbLevel));
-                savedLevel = tempBulbLevel.toBigDecimal();
-                if (!hasRGB()) {
-                    changeChannel(CHANNEL_LEVEL, tempBulbLevel);
-                }
+                changeChannel(CHANNEL_LEVEL, tempBulbLevel);
             }
         } else if ("ON".equals(bulbState) || "OFF".equals(bulbState)) { // NOTE: Level is missing when this runs
-            if (!hasRGB()) {
-                changeChannel(CHANNEL_LEVEL, OnOffType.valueOf(bulbState));
-            }
+            changeChannel(CHANNEL_LEVEL, OnOffType.valueOf(bulbState));
         }
         bulbMode = Helper.resolveJSON(messageJSON, "\"bulb_mode\":\"", 5);
         switch (bulbMode) {
@@ -182,7 +173,6 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
                 if (!bulbCTempS.isEmpty()) {
                     var bulbCTemp = Integer.valueOf(bulbCTempS);
                     changeChannel(CHANNEL_COLOURTEMP, scaleMireds(bulbCTemp));
-                    changeChannel(CHANNEL_COLOURTEMP_ABS, new QuantityType(bulbCTemp, Units.MIRED));
                     if (hasRGB()) {
                         changeChannel(CHANNEL_COLOUR, calculateHSBFromColorTemp(bulbCTemp, tempBulbLevel));
                     }
@@ -207,9 +197,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
                             new PercentType(Integer.valueOf(bulbSaturation)), tempBulbLevel);
                     changeChannel(CHANNEL_COLOUR, hsb);
                     if (hasCCT()) {
-                        int mireds = calculateColorTempFromHSB(hsb);
-                        changeChannel(CHANNEL_COLOURTEMP, scaleMireds(mireds));
-                        changeChannel(CHANNEL_COLOURTEMP_ABS, new QuantityType(mireds, Units.MIRED));
+                        changeChannel(CHANNEL_COLOURTEMP, scaleMireds(calculateColorTempFromHSB(hsb)));
                     }
                 }
                 break;
@@ -225,6 +213,9 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             case "night":
                 if (hasRGB()) {
                     changeChannel(CHANNEL_BULB_MODE, new StringType("night"));
+                    if (config.oneTriggersNightMode) {
+                        changeChannel(CHANNEL_LEVEL, new PercentType("1"));
+                    }
                 }
                 break;
         }
@@ -303,7 +294,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             coefficients = KANG_Y_COEFFICIENTS[0];
         }
         BigDecimal y = polynomialFit(x, coefficients);
-        var rawHsb = ColorUtil.xyToHsb(new double[] { x.doubleValue(), y.doubleValue() });
+        var rawHsb = HSBType.fromXY(x.floatValue() * 100.0f, y.floatValue() * 100.0f);
         return new HSBType(rawHsb.getHue(), rawHsb.getSaturation(), brightness);
     }
 
@@ -437,17 +428,6 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             case CHANNEL_COLOURTEMP:
                 int scaledCommand = (int) Math.round((370 - (2.17 * Float.valueOf(command.toString()))));
                 sendMQTT("{\"state\":\"ON\",\"level\":" + savedLevel + ",\"color_temp\":" + scaledCommand + "}");
-                break;
-            case CHANNEL_COLOURTEMP_ABS:
-                int mireds;
-                QuantityType<?> miredsQt;
-                if (command instanceof QuantityType
-                        && (miredsQt = ((QuantityType<?>) command).toInvertibleUnit(Units.MIRED)) != null) {
-                    mireds = miredsQt.intValue();
-                } else {
-                    mireds = Integer.valueOf(command.toString());
-                }
-                sendMQTT("{\"state\":\"ON\",\"level\":" + savedLevel + ",\"color_temp\":" + mireds + "}");
                 break;
             case CHANNEL_COMMAND:
                 sendMQTT("{\"command\":\"" + command + "\"}");

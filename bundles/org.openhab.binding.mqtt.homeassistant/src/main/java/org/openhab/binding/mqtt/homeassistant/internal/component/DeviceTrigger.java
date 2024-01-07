@@ -65,7 +65,8 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
             value = new TextValue();
         }
 
-        buildChannel(channelConfiguration.type, value, getName(), componentConfiguration.getUpdateListener())
+        buildChannel(channelConfiguration.type, value, channelConfiguration.getName(),
+                componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.topic, channelConfiguration.getValueTemplate()).trigger(true).build();
     }
 }

@@ -58,6 +58,6 @@ public class EcowattDaySignals {
                 }
             }
         }
-        return -1;
+        return 0;
     }
 }

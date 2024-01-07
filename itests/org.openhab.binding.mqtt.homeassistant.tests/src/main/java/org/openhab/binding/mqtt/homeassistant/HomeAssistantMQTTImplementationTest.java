@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -161,8 +160,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         ComponentDiscovered cd = (haID, c) -> {
             haComponents.put(c.getGroupUID().getId(), c);
             c.addChannelTypes(channelTypeProvider);
-            channelTypeProvider.setChannelGroupType(Objects.requireNonNull(c.getGroupTypeUID()),
-                    Objects.requireNonNull(c.getType()));
+            channelTypeProvider.setChannelGroupType(c.getGroupTypeUID(), c.getType());
             latch.countDown();
         };
 

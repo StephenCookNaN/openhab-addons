@@ -53,7 +53,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -710,9 +709,9 @@ public class SmartherModuleHandler extends BaseThingHandler {
             // Update the Status channels
             updateChannelState(CHANNEL_STATUS_STATE, (localChrono.isActive() ? OnOffType.ON : OnOffType.OFF));
             updateChannelState(CHANNEL_STATUS_FUNCTION,
-                    new StringType(StringUtils.capitalize(localChrono.getFunction().toLowerCase())));
+                    new StringType(StringUtil.capitalize(localChrono.getFunction().toLowerCase())));
             updateChannelState(CHANNEL_STATUS_MODE,
-                    new StringType(StringUtils.capitalize(localChrono.getMode().toLowerCase())));
+                    new StringType(StringUtil.capitalize(localChrono.getMode().toLowerCase())));
             updateChannelState(CHANNEL_STATUS_TEMPERATURE, localChrono.getSetPointTemperature().toState());
             updateChannelState(CHANNEL_STATUS_ENDTIME,
                     new StringType(localChrono.getActivationTimeLabel(timeZoneProvider)));

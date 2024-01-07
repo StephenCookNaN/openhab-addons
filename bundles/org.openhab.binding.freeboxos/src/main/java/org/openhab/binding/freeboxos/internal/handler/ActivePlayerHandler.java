@@ -35,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ActivePlayerHandler} is responsible for handling everything associated to Freebox Player
- * with api capabilities.
+ * The {@link ActivePlayerHandler} is responsible for handling everything associated to Freebox Player with api
+ * capabilities.
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -59,10 +59,8 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
         Player player = getManager(PlayerManager.class).getDevice(getClientId());
         if (player.reachable()) {
             Configuration config = getManager(PlayerManager.class).getConfig(player.id());
-            if (config != null) {
-                properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.serial());
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.firmwareVersion());
-            }
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.serial());
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.firmwareVersion());
         }
     }
 
@@ -70,24 +68,15 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
         if (thing.getStatus().equals(ThingStatus.ONLINE)) {
-            Player player = getManager(PlayerManager.class).getDevice(getClientId());
-            updateStatus(player.reachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
-            if (player.reachable()) {
-                Status status = getManager(PlayerManager.class).getPlayerStatus(getClientId());
-                if (status != null) {
-                    updateChannelString(PLAYER_STATUS, PLAYER_STATUS, status.powerState().name());
-                    ForegroundApp foreground = status.foregroundApp();
-                    if (foreground != null) {
-                        updateChannelString(PLAYER_STATUS, PACKAGE, foreground._package());
-                    }
-                }
-                Configuration config = getManager(PlayerManager.class).getConfig(getClientId());
-                if (config != null) {
-                    uptime = checkUptimeAndFirmware(config.uptimeVal(), uptime, config.firmwareVersion());
-                } else {
-                    uptime = 0;
-                }
+            Status status = getManager(PlayerManager.class).getPlayerStatus(getClientId());
+            updateChannelString(PLAYER_STATUS, PLAYER_STATUS, status.powerState().name());
+            ForegroundApp foreground = status.foregroundApp();
+            if (foreground != null) {
+                updateChannelString(PLAYER_STATUS, PACKAGE, foreground._package());
             }
+            Configuration config = getManager(PlayerManager.class).getConfig(getClientId());
+
+            uptime = checkUptimeAndFirmware(config.uptimeVal(), uptime, config.firmwareVersion());
             updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
         }
     }
@@ -95,9 +84,7 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
     public void reboot() {
         processReboot(() -> {
             try {
-                if (!getManager(PlayerManager.class).reboot(getClientId())) {
-                    logger.warn("Unable to reboot the player - probably not reachable");
-                }
+                getManager(PlayerManager.class).reboot(getClientId());
             } catch (FreeboxException e) {
                 logger.warn("Error rebooting: {}", e.getMessage());
             }

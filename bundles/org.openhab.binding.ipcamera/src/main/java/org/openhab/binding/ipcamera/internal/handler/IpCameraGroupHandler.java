@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Matthew Skinner - Initial contribution
  */
+
 @NonNullByDefault
 public class IpCameraGroupHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());

@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BluetoothUtils {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(BluetoothUtils.class);
+    public static final Logger logger = LoggerFactory.getLogger(BluetoothUtils.class);
 
     public static final int FORMAT_UINT8 = 0x11;
     public static final int FORMAT_UINT16 = 0x12;
@@ -47,7 +47,6 @@ public class BluetoothUtils {
      */
     public static int[] toIntArray(byte[] value) {
         int[] ret = new int[value.length];
-        // System.arraycopy cannot be used as it throws ArrayStoreException
         for (int i = 0; i < value.length; i++) {
             ret[i] = value[i];
         }
@@ -91,7 +90,7 @@ public class BluetoothUtils {
                 return unsignedToSigned(
                         unsignedBytesToInt(value[offset], value[offset + 1], value[offset + 2], value[offset + 3]), 32);
             default:
-                LOGGER.error("Unknown format type {} - no int value can be provided for it.", formatType);
+                logger.error("Unknown format type {} - no int value can be provided for it.", formatType);
         }
 
         return null;
@@ -112,7 +111,7 @@ public class BluetoothUtils {
             case FORMAT_FLOAT:
                 return bytesToFloat(value[offset], value[offset + 1], value[offset + 2], value[offset + 3]);
             default:
-                LOGGER.error("Unknown format type {} - no float value can be provided for it.", formatType);
+                logger.error("Unknown format type {} - no float value can be provided for it.", formatType);
         }
 
         return null;

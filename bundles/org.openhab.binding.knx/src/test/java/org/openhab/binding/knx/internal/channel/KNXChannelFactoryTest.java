@@ -18,7 +18,6 @@ import static org.mockito.Mockito.when;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -43,7 +42,7 @@ class KNXChannelFactoryTest {
      */
     @Test
     public void testNullChannelUidFails() {
-        Channel channel = Objects.requireNonNull(mock(Channel.class));
+        Channel channel = mock(Channel.class);
 
         assertThrows(IllegalArgumentException.class, () -> {
             KNXChannelFactory.createKnxChannel(channel);
@@ -52,7 +51,7 @@ class KNXChannelFactoryTest {
 
     @Test
     public void testInvalidChannelUidFails() {
-        Channel channel = Objects.requireNonNull(mock(Channel.class));
+        Channel channel = mock(Channel.class);
         when(channel.getChannelTypeUID()).thenReturn(new ChannelTypeUID("a:b:c"));
 
         assertThrows(IllegalArgumentException.class, () -> {
@@ -66,7 +65,7 @@ class KNXChannelFactoryTest {
             CHANNEL_NUMBER_CONTROL, CHANNEL_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER_CONTROL, CHANNEL_STRING,
             CHANNEL_STRING_CONTROL, CHANNEL_SWITCH, CHANNEL_SWITCH_CONTROL })
     public void testSuccess(String channeltype) {
-        Channel channel = Objects.requireNonNull(mock(Channel.class));
+        Channel channel = mock(Channel.class);
         Configuration configuration = new Configuration(
                 Map.of("key1", "5.001:<1/2/3+4/5/6+1/5/6", "key2", "1.001:7/1/9+1/1/2"));
         when(channel.getChannelTypeUID()).thenReturn(new ChannelTypeUID("knx:" + channeltype));

@@ -12,35 +12,20 @@
  */
 package org.openhab.binding.mybmw.internal.dto.charge;
 
+import org.openhab.binding.mybmw.internal.utils.Converter;
+
 /**
  * The {@link Time} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  * @author Norbert Truchsess - edit and send of charge profile
- * @author Martin Grassl - refactored to Java Bean
  */
 public class Time {
-    private int hour = -1;// ": 11,
-    private int minute = -1;// ": 0
-
-    public int getHour() {
-        return hour;
-    }
-
-    public void setHour(int hour) {
-        this.hour = hour;
-    }
-
-    public int getMinute() {
-        return minute;
-    }
-
-    public void setMinute(int minute) {
-        this.minute = minute;
-    }
+    public int hour;// ": 11,
+    public int minute;// ": 0
 
     @Override
     public String toString() {
-        return "Time [hour=" + hour + ", minute=" + minute + "]";
+        return Converter.getTime(this);
     }
 }

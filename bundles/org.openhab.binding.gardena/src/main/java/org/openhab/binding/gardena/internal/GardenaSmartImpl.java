@@ -73,7 +73,6 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketListener {
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartImpl.class);
-    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private Gson gson = new GsonBuilder().registerTypeAdapter(DataItem.class, new DataItemDeserializer()).create();
 
@@ -213,7 +212,6 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             }
 
             Request request = httpClient.newRequest(url).method(method).header(HttpHeader.CONTENT_TYPE, contentType)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                     .header(HttpHeader.ACCEPT, "application/vnd.api+json").header(HttpHeader.ACCEPT_ENCODING, "gzip");
 
             if (!URL_API_TOKEN.equals(url)) {

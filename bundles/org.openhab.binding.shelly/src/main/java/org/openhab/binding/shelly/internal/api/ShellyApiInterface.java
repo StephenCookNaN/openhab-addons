@@ -15,7 +15,6 @@ package org.openhab.binding.shelly.internal.api;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
@@ -43,8 +42,7 @@ public interface ShellyApiInterface {
 
     ShellySettingsDevice getDeviceInfo() throws ShellyApiException;
 
-    ShellyDeviceProfile getDeviceProfile(String thingType, @Nullable ShellySettingsDevice device)
-            throws ShellyApiException;
+    ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException;
 
     ShellySettingsStatus getStatus() throws ShellyApiException;
 

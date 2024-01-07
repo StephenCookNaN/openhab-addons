@@ -40,10 +40,9 @@
 		</command>
 	</channel-type>
 	<channel-type id="profile-target-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>SOC Target</label>
 		<description>SOC charging target </description>
-		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="profile-limit-channel">
 		<item-type>Switch</item-type>

@@ -15,7 +15,6 @@ package org.openhab.binding.neohub.internal;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Instant;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -117,9 +116,9 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
      */
     private void closeSession() {
         Session session = this.session;
-        this.session = null;
         if (session != null) {
             session.close();
+            this.session = null;
         }
     }
 
@@ -173,19 +172,19 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
         responsePending = true;
 
         IOException caughtException = null;
-        throttle();
         try {
             // send the request
             logger.debug("hub '{}' sending characters:{}", hubId, requestOuter.length());
             session.getRemote().sendString(requestOuter);
             logger.trace("hub '{}' sent:{}", hubId, requestOuter);
 
-            // sleep and loop until we get a response, the socket is closed, or it times out
-            Instant timeout = Instant.now().plusSeconds(config.socketTimeout);
+            // sleep and loop until we get a response or the socket is closed
+            int sleepRemainingMilliseconds = config.socketTimeout * 1000;
             while (responsePending) {
                 try {
                     Thread.sleep(SLEEP_MILLISECONDS);
-                    if (Instant.now().isAfter(timeout)) {
+                    sleepRemainingMilliseconds = sleepRemainingMilliseconds - SLEEP_MILLISECONDS;
+                    if (sleepRemainingMilliseconds <= 0) {
                         throw new IOException("Read timed out");
                     }
                 } catch (InterruptedException e) {
@@ -195,9 +194,6 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
         } catch (IOException e) {
             caughtException = e;
         }
-
-        caughtException = caughtException != null ? caughtException
-                : this.session == null ? new IOException("WebSocket session closed") : null;
 
         logger.debug("hub '{}' received characters:{}", hubId, responseOuter.length());
         logger.trace("hub '{}' received:{}", hubId, responseOuter);

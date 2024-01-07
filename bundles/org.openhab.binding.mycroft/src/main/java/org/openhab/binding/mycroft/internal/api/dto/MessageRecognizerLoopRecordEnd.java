@@ -14,8 +14,6 @@ package org.openhab.binding.mycroft.internal.api.dto;
 
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * This message informs the bus clients that Mycroft
  * finished listening to the mic.
@@ -31,8 +29,7 @@ public class MessageRecognizerLoopRecordEnd extends BaseMessage {
     }
 
     public static class Context {
-        @SerializedName("client_name")
-        public String clientName = "";
+        public String client_name = "";
         public String source = "";
         public String destination = "";
     }

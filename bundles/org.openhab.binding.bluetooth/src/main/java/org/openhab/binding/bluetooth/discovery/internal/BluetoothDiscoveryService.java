@@ -16,7 +16,6 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -153,8 +152,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
     public void deviceDiscovered(BluetoothDevice device) {
         logger.debug("Discovered bluetooth device '{}': {}", device.getName(), device);
 
-        DiscoveryCache cache = Objects
-                .requireNonNull(discoveryCaches.computeIfAbsent(device.getAddress(), addr -> new DiscoveryCache()));
+        DiscoveryCache cache = discoveryCaches.computeIfAbsent(device.getAddress(), addr -> new DiscoveryCache());
         cache.handleDiscovery(device);
     }
 

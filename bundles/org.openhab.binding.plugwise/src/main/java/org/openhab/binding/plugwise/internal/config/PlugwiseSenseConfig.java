@@ -12,20 +12,18 @@
  */
 package org.openhab.binding.plugwise.internal.config;
 
+import static org.openhab.binding.plugwise.internal.PlugwiseUtils.*;
 import static org.openhab.binding.plugwise.internal.protocol.field.BoundaryAction.OFF_BELOW_ON_ABOVE;
 import static org.openhab.binding.plugwise.internal.protocol.field.BoundaryType.NONE;
 
 import java.time.Duration;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.plugwise.internal.PlugwiseUtils;
 import org.openhab.binding.plugwise.internal.protocol.field.BoundaryAction;
 import org.openhab.binding.plugwise.internal.protocol.field.BoundaryType;
 import org.openhab.binding.plugwise.internal.protocol.field.Humidity;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 import org.openhab.binding.plugwise.internal.protocol.field.Temperature;
-import org.openhab.core.util.StringUtils;
 
 /**
  * The {@link PlugwiseScanConfig} class represents the configuration for a Plugwise Sense.
@@ -37,9 +35,8 @@ public class PlugwiseSenseConfig {
 
     private String macAddress = "";
     private int measurementInterval = 15; // minutes
-    private String boundaryType = Objects.requireNonNull(StringUtils.capitalizeByUnderscore(NONE.name()));
-    private String boundaryAction = Objects
-            .requireNonNull(StringUtils.capitalizeByUnderscore(OFF_BELOW_ON_ABOVE.name()));
+    private String boundaryType = upperUnderscoreToLowerCamel(NONE.name());
+    private String boundaryAction = upperUnderscoreToLowerCamel(OFF_BELOW_ON_ABOVE.name());
     private int temperatureBoundaryMin = 15; // degrees Celsius
     private int temperatureBoundaryMax = 25; // degrees Celsius
     private int humidityBoundaryMin = 45; // relative humidity (RH)
@@ -57,11 +54,11 @@ public class PlugwiseSenseConfig {
     }
 
     public BoundaryType getBoundaryType() {
-        return BoundaryType.valueOf(PlugwiseUtils.lowerCamelToUpperUnderscore(boundaryType));
+        return BoundaryType.valueOf(lowerCamelToUpperUnderscore(boundaryType));
     }
 
     public BoundaryAction getBoundaryAction() {
-        return BoundaryAction.valueOf(PlugwiseUtils.lowerCamelToUpperUnderscore(boundaryAction));
+        return BoundaryAction.valueOf(lowerCamelToUpperUnderscore(boundaryAction));
     }
 
     public Temperature getTemperatureBoundaryMin() {

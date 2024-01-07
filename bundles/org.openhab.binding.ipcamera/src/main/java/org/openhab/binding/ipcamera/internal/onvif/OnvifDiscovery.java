@@ -61,6 +61,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
  *
  * @author Matthew Skinner - Initial contribution
  */
+
 @NonNullByDefault
 @io.netty.channel.ChannelHandler.Sharable
 public class OnvifDiscovery {
@@ -109,7 +110,7 @@ public class OnvifDiscovery {
         String temp = url;
         BigDecimal onvifPort = new BigDecimal(80);
 
-        logger.info("Camera found at xAddr: {}", url);
+        logger.info("Camera found at xAddr:{}", url);
         int endIndex = temp.indexOf(" ");// Some xAddr have two urls with a space in between.
         if (endIndex > 0) {
             temp = temp.substring(0, endIndex);// Use only the first url from now on.
@@ -138,7 +139,7 @@ public class OnvifDiscovery {
     void processCameraReplys() {
         for (DatagramPacket packet : listOfReplys) {
             String xml = packet.content().toString(CharsetUtil.UTF_8);
-            logger.trace("Device replied to discovery with: {}", xml);
+            logger.trace("Device replied to discovery with:{}", xml);
             String xAddr = Helper.fetchXML(xml, "", "d:XAddrs>");// Foscam <wsdd:XAddrs> and all other brands <d:XAddrs>
             if (!xAddr.isEmpty()) {
                 searchReply(xAddr, xml);
@@ -149,7 +150,7 @@ public class OnvifDiscovery {
                 } catch (IOException e) {
                     brand = "onvif";
                 }
-                logger.debug("Possible {} camera found at: {}", brand, packet.sender().getHostString());
+                logger.info("Possible {} camera found at:{}", brand, packet.sender().getHostString());
                 if ("reolink".equals(brand)) {
                     ipCameraDiscoveryService.newCameraFound(brand, packet.sender().getHostString(), 8000);
                 } else {
@@ -199,7 +200,7 @@ public class OnvifDiscovery {
                 response += temp;
             }
             reply.close();
-            logger.trace("Cameras Login page is: {}", response);
+            logger.trace("Cameras Login page is:{}", response);
             brand = checkForBrand(response);
         } catch (MalformedURLException e) {
         } finally {

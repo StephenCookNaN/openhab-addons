@@ -243,14 +243,14 @@ class SetAudioVolume extends SonyAudioMethod {
 
     SetAudioVolume(int volume, int min, int max) {
         super("setAudioVolume", "1.1");
-        long scaledVolume = scaleVolume(volume, min, max);
-        params = new Param[] { new Param(scaledVolume) };
+        long scaled_volume = scaleVolume(volume, min, max);
+        params = new Param[] { new Param(scaled_volume) };
     }
 
     SetAudioVolume(int zone, int volume, int min, int max) {
         super("setAudioVolume", "1.1");
-        long scaledVolume = scaleVolume(volume, min, max);
-        params = new Param[] { new Param(scaledVolume, zone) };
+        long scaled_volume = scaleVolume(volume, min, max);
+        params = new Param[] { new Param(scaled_volume, zone) };
     }
 
     SetAudioVolume(String volume_change) {

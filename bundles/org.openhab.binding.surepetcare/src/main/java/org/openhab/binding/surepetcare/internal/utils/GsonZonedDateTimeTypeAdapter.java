@@ -15,7 +15,6 @@ package org.openhab.binding.surepetcare.internal.utils;
 import java.lang.reflect.Type;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -77,11 +76,6 @@ public class GsonZonedDateTimeTypeAdapter implements JsonSerializer<ZonedDateTim
     @Override
     public @Nullable ZonedDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-        String content = json.getAsString();
-        try {
-            return ZonedDateTime.parse(content);
-        } catch (DateTimeParseException e) {
-            throw new JsonParseException("Could not parse as ZonedDateTime: " + content, e);
-        }
+        return ZONED_FORMATTER.parse(json.getAsString(), ZonedDateTime::from);
     }
 }

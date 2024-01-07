@@ -365,10 +365,9 @@ public class DoorbellHandler extends BaseThingHandler {
     }
 
     private void stopImageRefreshJob() {
-        ScheduledFuture<?> imageRefreshJob = this.imageRefreshJob;
         if (imageRefreshJob != null) {
             imageRefreshJob.cancel(true);
-            this.imageRefreshJob = null;
+            imageRefreshJob = null;
             logger.debug("Canceling image refresh job");
         }
     }
@@ -379,11 +378,9 @@ public class DoorbellHandler extends BaseThingHandler {
     }
 
     private void stopUDPListenerJob() {
-        ScheduledFuture<?> listenerJob = this.listenerJob;
         if (listenerJob != null) {
             listenerJob.cancel(true);
             udpListener.shutdown();
-            this.listenerJob = null;
             logger.debug("Canceling listener job");
         }
     }
@@ -393,21 +390,19 @@ public class DoorbellHandler extends BaseThingHandler {
         if (offDelay == null) {
             return;
         }
-        ScheduledFuture<?> doorbellOffJob = this.doorbellOffJob;
         if (doorbellOffJob != null) {
             doorbellOffJob.cancel(true);
         }
-        this.doorbellOffJob = scheduler.schedule(() -> {
+        doorbellOffJob = scheduler.schedule(() -> {
             logger.debug("Update channel 'doorbell' to OFF for thing {}", getThing().getUID());
             triggerChannel(CHANNEL_DOORBELL, CommonTriggerEvents.RELEASED);
         }, offDelay, TimeUnit.SECONDS);
     }
 
     private void stopDoorbellOffJob() {
-        ScheduledFuture<?> doorbellOffJob = this.doorbellOffJob;
         if (doorbellOffJob != null) {
             doorbellOffJob.cancel(true);
-            this.doorbellOffJob = null;
+            doorbellOffJob = null;
             logger.debug("Canceling doorbell off job");
         }
     }
@@ -417,21 +412,19 @@ public class DoorbellHandler extends BaseThingHandler {
         if (offDelay == null) {
             return;
         }
-        ScheduledFuture<?> motionOffJob = this.motionOffJob;
         if (motionOffJob != null) {
             motionOffJob.cancel(true);
         }
-        this.motionOffJob = scheduler.schedule(() -> {
+        motionOffJob = scheduler.schedule(() -> {
             logger.debug("Update channel 'motion' to OFF for thing {}", getThing().getUID());
             updateState(CHANNEL_MOTION, OnOffType.OFF);
         }, offDelay, TimeUnit.SECONDS);
     }
 
     private void stopMotionOffJob() {
-        ScheduledFuture<?> motionOffJob = this.motionOffJob;
         if (motionOffJob != null) {
             motionOffJob.cancel(true);
-            this.motionOffJob = null;
+            motionOffJob = null;
             logger.debug("Canceling motion off job");
         }
     }

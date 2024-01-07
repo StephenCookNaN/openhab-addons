@@ -20,7 +20,6 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -156,7 +155,7 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
     }
 
     @Override
-    protected byte[] buildMessage(byte[] itemCode, boolean getCommand, byte[] data) {
+    protected byte[] buildMessage(SonyProjectorItem item, boolean getCommand, byte[] data) {
         byte[] communityData = community.getBytes();
         byte[] message = new byte[10 + data.length];
         message[0] = HEADER[0];
@@ -166,8 +165,8 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
         message[4] = communityData[2];
         message[5] = communityData[3];
         message[6] = getCommand ? GET : SET;
-        message[7] = itemCode[0];
-        message[8] = itemCode[1];
+        message[7] = item.getCode()[0];
+        message[8] = item.getCode()[1];
         message[9] = getCommand ? 0 : (byte) data.length;
         if (!getCommand) {
             System.arraycopy(data, 0, message, 10, data.length);
@@ -260,10 +259,9 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
 
         // Item number should be the same as used for sending
         byte[] itemResponseMsg = Arrays.copyOfRange(responseMessage, 7, 9);
-        byte[] itemSentMsg = Objects.requireNonNull(item.getCode());
-        if (!Arrays.equals(itemResponseMsg, itemSentMsg)) {
+        if (!Arrays.equals(itemResponseMsg, item.getCode())) {
             logger.debug("Unexpected item number in response: {} rather than {}", HexUtils.bytesToHex(itemResponseMsg),
-                    HexUtils.bytesToHex(itemSentMsg));
+                    HexUtils.bytesToHex(item.getCode()));
             throw new CommunicationException("Unexpected item number in response");
         }
 

@@ -61,13 +61,4 @@ public enum LightColorMode {
     public static boolean hasRGB(List<LightColorMode> supportedColorModes) {
         return WITH_RGB.stream().anyMatch(cm -> supportedColorModes.contains(cm));
     }
-
-    public String serializedName() {
-        try {
-            return LightColorMode.class.getDeclaredField(toString()).getAnnotation(SerializedName.class).value();
-        } catch (NoSuchFieldException e) {
-            // can't happen
-            throw new IllegalStateException(e);
-        }
-    }
 }

@@ -103,19 +103,18 @@ public abstract class OceanicThingHandler extends BaseThingHandler {
         } else {
             bufferSize = ((BigDecimal) getConfig().get(BUFFER_SIZE)).intValue();
         }
-        ScheduledFuture<?> pollingJob = this.pollingJob;
+
         if (pollingJob == null || pollingJob.isCancelled()) {
-            this.pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1,
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1,
                     ((BigDecimal) getConfig().get(INTERVAL)).intValue(), TimeUnit.SECONDS);
         }
     }
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> pollingJob = this.pollingJob;
-        if (pollingJob != null) {
+        if (pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
-            this.pollingJob = null;
+            pollingJob = null;
         }
     }
 

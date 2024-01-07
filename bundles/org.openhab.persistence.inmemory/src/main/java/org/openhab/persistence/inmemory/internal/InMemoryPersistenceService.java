@@ -132,11 +132,6 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
     }
 
     @Override
-    public void store(Item item, ZonedDateTime date, State state, @Nullable String alias) {
-        internalStore(Objects.requireNonNullElse(alias, item.getName()), date, state);
-    }
-
-    @Override
     public boolean remove(FilterCriteria filter) throws IllegalArgumentException {
         String itemName = filter.getItemName();
         if (itemName == null) {
@@ -173,14 +168,9 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
 
         Lock lock = persistItem.lock();
         lock.lock();
-
-        Comparator<PersistEntry> comparator = filter.getOrdering() == FilterCriteria.Ordering.ASCENDING
-                ? Comparator.comparing(PersistEntry::timestamp)
-                : Comparator.comparing(PersistEntry::timestamp).reversed();
-
         try {
-            return persistItem.database().stream().filter(e -> applies(e, filter)).sorted(comparator)
-                    .map(e -> toHistoricItem(itemName, e)).toList();
+            return persistItem.database().stream().filter(e -> applies(e, filter)).map(e -> toHistoricItem(itemName, e))
+                    .toList();
         } finally {
             lock.unlock();
         }

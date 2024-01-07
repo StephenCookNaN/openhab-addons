@@ -64,8 +64,7 @@ enum NutName {
     // Battery
     BATTERY_CHARGE("batteryCharge", "battery.charge", Units.PERCENT),
     BATTERY_RUNTIME("batteryRuntime", "battery.runtime", Units.SECOND),
-    BATTERY_VOLTAGE("batteryVoltage", "battery.voltage", Units.VOLT),
-    BATTERY_TEMPERATURE("batteryTemperature", "battery.temperature", SIUnits.CELSIUS);
+    BATTERY_VOLTAGE("batteryVoltage", "battery.voltage", Units.VOLT);
 
     static final Map<String, NutName> NUT_NAME_MAP = Stream.of(NutName.values())
             .collect(Collectors.toMap(NutName::getChannelId, Function.identity()));

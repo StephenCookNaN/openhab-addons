@@ -14,14 +14,13 @@ package org.openhab.binding.upnpcontrol.internal.queue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.util.StringUtils;
+import org.openhab.binding.upnpcontrol.internal.util.StringUtils;
 
 /**
  *
@@ -179,7 +178,7 @@ public class UpnpEntry {
      * @return the URI for the album art.
      */
     public String getAlbumArtUri() {
-        return Objects.requireNonNull(StringUtils.unEscapeXml(albumArtUri));
+        return StringUtils.unEscapeXml(albumArtUri);
     }
 
     /**

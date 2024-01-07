@@ -1,7 +1,6 @@
 # Bluetooth BlueZ Adapter
 
-This extension supports Bluetooth access via BlueZ and DBus on Linux.
-This is architecture agnostic and uses Unix Sockets.
+This extension supports Bluetooth access via BlueZ and DBus on Linux. This is architecture agnostic and uses Unix Sockets.
 
 # Setup
 
@@ -34,7 +33,7 @@ Restart running services for changes to take effect.
 ```shell
 systemctl restart dbus
 systemctl restart bluetooth
-systemctl restart openhab
+systemctl restart openhab2
 ```
 
 ## Supported Things

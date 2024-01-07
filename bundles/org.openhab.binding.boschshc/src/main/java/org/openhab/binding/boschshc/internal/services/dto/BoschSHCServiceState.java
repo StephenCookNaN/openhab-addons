@@ -37,7 +37,7 @@ public class BoschSHCServiceState {
     @SerializedName("@type")
     public final String type;
 
-    public BoschSHCServiceState(String type) {
+    protected BoschSHCServiceState(String type) {
         this.type = type;
 
         if (stateType == null) {

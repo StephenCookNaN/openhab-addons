@@ -141,9 +141,7 @@ public class ReadmeHelper {
 
         Arrays.asList(MiIoDevices.values()).forEach(device -> {
             if (!"unknown".equals(device.getModel())) {
-                String link = device.getThingType().equals(MiIoBindingConstants.THING_TYPE_VACUUM)
-                        ? "robo-rock-vacuum-channels"
-                        : device.getModel().replace(".", "-");
+                String link = device.getModel().replace(".", "-");
                 boolean isSupported = device.getThingType().equals(MiIoBindingConstants.THING_TYPE_UNSUPPORTED);
                 Boolean experimental = false;
                 String remark = "";

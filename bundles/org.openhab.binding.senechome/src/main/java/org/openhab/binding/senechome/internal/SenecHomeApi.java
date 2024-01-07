@@ -13,6 +13,7 @@
 package org.openhab.binding.senechome.internal;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -32,17 +33,19 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.MalformedJsonException;
 
 /**
  * The {@link SenecHomeApi} class configures http client and
  * performs status requests
  *
  * @author Steven Schwarznau - Initial contribution
- * @author Robert Delbrück - Update for Senec API changes
  *
  */
 @NonNullByDefault
 public class SenecHomeApi {
+    private static final String HTTP_PROTO_PREFIX = "http://";
+
     private final Logger logger = LoggerFactory.getLogger(SenecHomeApi.class);
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
@@ -63,33 +66,28 @@ public class SenecHomeApi {
      * To receive new values, just modify the Json objects and add them to the thing channels
      *
      * @return Instance of SenecHomeResponse
-     * @throws TimeoutException Communication failed (Timeout)
-     * @throws ExecutionException Communication failed
+     * @throws MalformedURLException Configuration/URL is wrong
      * @throws IOException Communication failed
-     * @throws InterruptedException Communication failed (Interrupted)
-     * @throws JsonSyntaxException Received response has an invalid json syntax
      */
     public SenecHomeResponse getStatistics()
-            throws TimeoutException, ExecutionException, IOException, InterruptedException, JsonSyntaxException {
-        String location = hostname + "/lala.cgi";
-        logger.trace("sending request to: {}", location);
+            throws InterruptedException, TimeoutException, ExecutionException, IOException {
+        String location = HTTP_PROTO_PREFIX + hostname;
 
         Request request = httpClient.newRequest(location);
         request.header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString());
-        request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString());
+        request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.FORM_ENCODED.asString());
         ContentResponse response = null;
         try {
-            String dataToSend = gson.toJson(new SenecHomeResponse());
-            logger.trace("data to send: {}", dataToSend);
-            response = request.method(HttpMethod.POST).content(new StringContentProvider(dataToSend)).send();
+            response = request.method(HttpMethod.POST)
+                    .content(new StringContentProvider(gson.toJson(new SenecHomeResponse()))).send();
             if (response.getStatus() == HttpStatus.OK_200) {
-                String responseString = response.getContentAsString();
-                return Objects.requireNonNull(gson.fromJson(responseString, SenecHomeResponse.class));
+                return Objects.requireNonNull(gson.fromJson(response.getContentAsString(), SenecHomeResponse.class));
             } else {
                 logger.trace("Got unexpected response code {}", response.getStatus());
                 throw new IOException("Got unexpected response code " + response.getStatus());
             }
-        } catch (JsonSyntaxException | InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (MalformedJsonException | JsonSyntaxException | InterruptedException | TimeoutException
+                | ExecutionException e) {
             String errorMessage = "\nlocation: " + location;
             errorMessage += "\nrequest: " + request.toString();
             errorMessage += "\nrequest.getHeaders: " + request.getHeaders();

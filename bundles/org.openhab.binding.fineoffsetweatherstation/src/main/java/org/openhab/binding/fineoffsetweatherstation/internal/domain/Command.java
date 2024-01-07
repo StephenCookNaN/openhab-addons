@@ -275,8 +275,4 @@ public enum Command {
     public boolean isResponseValid(byte[] data) {
         return isHeaderValid(data) && Utils.validateChecksum(data, sizeBytes);
     }
-
-    public int getSizeBytes() {
-        return sizeBytes;
-    }
 }

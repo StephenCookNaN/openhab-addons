@@ -161,9 +161,6 @@ class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<Intrusio
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_ARMING_STATE),
                 new StringType("SYSTEM_ARMING"));
-        verify(getCallback()).stateUpdated(
-                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_ACTIVE_CONFIGURATION_PROFILE),
-                new StringType("0"));
     }
 
     @Test

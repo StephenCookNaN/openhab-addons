@@ -14,7 +14,6 @@ package org.openhab.binding.ojelectronics.internal.services;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,7 +43,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public final class UpdateService {
-    private static final int REQUEST_TIMEOUT_MS = 10_000;
+
     private final Gson gson = OJGSonBuilder.getGSon();
     private final Logger logger = LoggerFactory.getLogger(UpdateService.class);
 
@@ -84,8 +83,8 @@ public final class UpdateService {
         }
         String jsonPayload = gson.toJson(new UpdateThermostatRequestModel(thermostat).withApiKey(configuration.apiKey));
         Request request = httpClient.POST(configuration.getRestApiUrl() + "/Thermostat/UpdateThermostat")
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).param("sessionid", sessionId)
-                .header(HttpHeader.CONTENT_TYPE, "application/json").content(new StringContentProvider(jsonPayload));
+                .param("sessionid", sessionId).header(HttpHeader.CONTENT_TYPE, "application/json")
+                .content(new StringContentProvider(jsonPayload));
         logger.trace("updateThermostat payload for themostat with serial {} is {}", thermostat.serialNumber,
                 jsonPayload);
 

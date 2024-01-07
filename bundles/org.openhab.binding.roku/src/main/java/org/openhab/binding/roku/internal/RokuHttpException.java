@@ -23,10 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class RokuHttpException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    public RokuHttpException(String errorMessage, Throwable t) {
-        super(errorMessage, t);
-    }
-
     public RokuHttpException(String errorMessage) {
         super(errorMessage);
     }

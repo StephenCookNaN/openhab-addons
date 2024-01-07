@@ -26,7 +26,6 @@ public class PilightBridgeConfiguration {
     private String ipAddress = "";
     private int port = 0;
     private int delay = 500;
-    private boolean backgroundDiscovery = true;
 
     public String getIpAddress() {
         return ipAddress;
@@ -50,13 +49,5 @@ public class PilightBridgeConfiguration {
 
     public void setDelay(Integer delay) {
         this.delay = delay;
-    }
-
-    public boolean getBackgroundDiscovery() {
-        return backgroundDiscovery;
-    }
-
-    public void setBackgroundDiscovery(boolean flag) {
-        backgroundDiscovery = flag;
     }
 }

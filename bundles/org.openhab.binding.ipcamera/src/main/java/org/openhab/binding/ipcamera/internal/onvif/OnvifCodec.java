@@ -28,6 +28,7 @@ import io.netty.util.ReferenceCountUtil;
 /**
  * The {@link OnvifCodec} is used by Netty to decode Onvif traffic into message Strings.
  *
+ *
  * @author Matthew Skinner - Initial contribution
  */
 @NonNullByDefault
@@ -65,11 +66,11 @@ public class OnvifCodec extends ChannelDuplexHandler {
         }
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
-            logger.trace("IdleStateEvent received: {}", e.state());
+            logger.trace("IdleStateEvent received {}", e.state());
             onvifConnection.setIsConnected(false);
             ctx.close();
         } else {
-            logger.trace("Other ONVIF netty channel event occurred: {}", evt);
+            logger.trace("Other ONVIF netty channel event occured {}", evt);
         }
     }
 

@@ -13,10 +13,6 @@
 			<channel-group id="electricity" typeId="electricity"/>
 		</channel-groups>
 
-		<properties>
-			<property name="thingTypeVersion">3</property>
-		</properties>
-
 		<config-description-ref uri="thing-type:energidataservice:service"/>
 	</thing-type>
 

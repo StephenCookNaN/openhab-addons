@@ -22,7 +22,6 @@ bundles/**/src/main/history
 features/**/src/main/history
 features/**/src/main/feature
 
-.vscode
 .factorypath
 pom.xml.versionsBackup
 .openapi-generator
